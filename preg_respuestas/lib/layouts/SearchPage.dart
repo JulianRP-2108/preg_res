@@ -4,6 +4,8 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:preg_respuestas/layouts/PreguntaPage.dart';
 import 'package:preg_respuestas/modelos/Pregunta.dart';
 
+import 'NuevaPregunta.dart';
+
 class SearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -42,7 +44,11 @@ class _SearchPageState extends State<SearchPage> {
           Icons.question_answer_rounded,
           color: Colors.white,
         ),
-        onPressed: () {},
+        onPressed: () => pushNewScreen(
+          context,
+          screen: NuevaPregunta(),
+          withNavBar: true,
+        ),
       ),
     );
   }
@@ -70,7 +76,7 @@ class _SearchPageState extends State<SearchPage> {
             return Container(
               margin: EdgeInsets.only(top: 8.0),
               decoration: BoxDecoration(
-                  color: Colors.red,
+                  color: Colors.greenAccent[200],
                   borderRadius: BorderRadius.all(Radius.circular(10.0))),
               child: ListTile(
                 visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -98,7 +104,7 @@ class _SearchPageState extends State<SearchPage> {
     List<Pregunta> preguntas = new List<Pregunta>();
     for (int i = 0; i < 20; i++) {
       preguntas.add(Pregunta(
-          titulo: "¿Como se calcula el areaadadada de un circulo?",
+          titulo: "¿Como se calcula el area de un circulo?",
           descripcion: "Descripcion"));
     }
     return preguntas;
