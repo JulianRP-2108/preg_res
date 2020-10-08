@@ -1,8 +1,11 @@
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:preg_respuestas/layouts/Ranking.dart';
 import 'package:preg_respuestas/layouts/SearchPage.dart';
 import 'package:preg_respuestas/layouts/screenExample.dart';
+
+import 'NotificationPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,7 +13,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   PersistentTabController _tabController;
   bool _hideNavBar;
 
@@ -22,17 +24,11 @@ class _HomePageState extends State<HomePage> {
     _hideNavBar = false;
   }
 
-  List<Widget> _buildScreens(){
-    return [
-      ScreenExample(),
-      SearchPage(),
-      ScreenExample(),
-      ScreenExample()
-    ];
+  List<Widget> _buildScreens() {
+    return [RankgingPage(), SearchPage(), NotificationPage(), ScreenExample()];
   }
 
-
- /* List<Widget> _buildScreens() {
+  /* List<Widget> _buildScreens() {
     return [
       MainScreen(
         menuScreenContext: layouts.
@@ -82,8 +78,6 @@ class _HomePageState extends State<HomePage> {
     ];
   }*/
 
-  
-
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
@@ -97,7 +91,6 @@ class _HomePageState extends State<HomePage> {
         icon: Icon(Icons.search),
         title: ("Preguntas"),
         activeContentColor: Colors.white,
-
         activeColor: Colors.teal,
         inactiveColor: Colors.grey,
       ),
@@ -105,11 +98,9 @@ class _HomePageState extends State<HomePage> {
         icon: Icon(Icons.notifications_active),
         title: ("Notificaciones"),
         activeContentColor: Colors.white,
-
         activeColor: Colors.blueAccent,
         inactiveColor: Colors.grey,
       ),
-      
       PersistentBottomNavBarItem(
         icon: Icon(Icons.person),
         title: ("Perfil"),
@@ -120,15 +111,15 @@ class _HomePageState extends State<HomePage> {
     ];
   }
 
-
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
-      screens: _buildScreens(),    //Lista de pantallas disponibles
+      screens: _buildScreens(), //Lista de pantallas disponibles
       controller: _tabController,
       items: _navBarsItems(),
       confineInSafeArea: true,
-      onItemSelected: (index){    //se activa siempre, aunque toques la misma que estas parado
+      onItemSelected: (index) {
+        //se activa siempre, aunque toques la misma que estas parado
         print("Seleccionaron, $index");
       },
       backgroundColor: Colors.white,
@@ -137,7 +128,7 @@ class _HomePageState extends State<HomePage> {
       stateManagement: true,
       hideNavigationBarWhenKeyboardShows: true,
       hideNavigationBar: _hideNavBar,
-     
+
       popAllScreensOnTapOfSelectedTab: true,
       itemAnimationProperties: ItemAnimationProperties(
         duration: Duration(milliseconds: 400),
@@ -148,8 +139,7 @@ class _HomePageState extends State<HomePage> {
         curve: Curves.ease,
         duration: Duration(milliseconds: 200),
       ),
-      navBarStyle:
-          NavBarStyle.style7, //
+      navBarStyle: NavBarStyle.style7, //
     );
   }
 }

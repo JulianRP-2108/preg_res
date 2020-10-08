@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:preg_respuestas/modelos/Pregunta.dart';
+import 'package:preg_respuestas/widgets/alertaConfirmacion.dart';
 
 /* 
 
@@ -166,7 +167,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
     return chips;
   }
 
-  //username, idpregunta o id respuesta
+  //username, idpregunta o id respuesta, tipo si es pregunta o respuesta
   Widget _demasDatos(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
@@ -183,6 +184,9 @@ class _PreguntaPageState extends State<PreguntaPage> {
               Container(
                 child: Row(
                   children: [
+                    Text(
+                      "(25)",
+                    ),
                     IconButton(
                         icon: Icon(Icons.volunteer_activism),
                         onPressed: () {
@@ -192,6 +196,15 @@ class _PreguntaPageState extends State<PreguntaPage> {
                         icon: Icon(Icons.report_gmailerrorred_rounded),
                         onPressed: () {
                           print("Pregunta reportada");
+                          showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ALertaConfirmacion(
+                                    pregunta:
+                                        "¿Desea reportar la pregunta (IDPregunta)?",
+                                    titulo: "Reporte");
+                              });
                         })
                   ],
                 ),
