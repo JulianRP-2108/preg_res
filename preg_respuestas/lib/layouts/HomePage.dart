@@ -1,6 +1,7 @@
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:preg_respuestas/layouts/PerfilPage.dart';
 import 'package:preg_respuestas/layouts/Ranking.dart';
 import 'package:preg_respuestas/layouts/SearchPage.dart';
 import 'package:preg_respuestas/layouts/screenExample.dart';
@@ -18,65 +19,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _tabController = PersistentTabController(initialIndex: 1);
     _hideNavBar = false;
   }
 
   List<Widget> _buildScreens() {
-    return [RankgingPage(), SearchPage(), NotificationPage(), ScreenExample()];
+    return [RankgingPage(), SearchPage(), NotificationPage(), PerfilPage()];
   }
-
-  /* List<Widget> _buildScreens() {
-    return [
-      MainScreen(
-        menuScreenContext: layouts.
-        hideStatus: _hideNavBar,
-        onScreenHideButtonPressed: () {
-          setState(() {
-            _hideNavBar = !_hideNavBar;
-          });
-        },
-      ),
-      MainScreen(
-        menuScreenContext: widget.menuScreenContext,
-        hideStatus: _hideNavBar,
-        onScreenHideButtonPressed: () {
-          setState(() {
-            _hideNavBar = !_hideNavBar;
-          });
-        },
-      ),
-      MainScreen(
-        menuScreenContext: widget.menuScreenContext,
-        hideStatus: _hideNavBar,
-        onScreenHideButtonPressed: () {
-          setState(() {
-            _hideNavBar = !_hideNavBar;
-          });
-        },
-      ),
-      MainScreen(
-        menuScreenContext: widget.menuScreenContext,
-        hideStatus: _hideNavBar,
-        onScreenHideButtonPressed: () {
-          setState(() {
-            _hideNavBar = !_hideNavBar;
-          });
-        },
-      ),
-      MainScreen(
-        menuScreenContext: widget.menuScreenContext,
-        hideStatus: _hideNavBar,
-        onScreenHideButtonPressed: () {
-          setState(() {
-            _hideNavBar = !_hideNavBar;
-          });
-        },
-      ),
-    ];
-  }*/
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
@@ -139,7 +89,7 @@ class _HomePageState extends State<HomePage> {
         curve: Curves.ease,
         duration: Duration(milliseconds: 200),
       ),
-      navBarStyle: NavBarStyle.style7, //
+      navBarStyle: NavBarStyle.style7,
     );
   }
 }
