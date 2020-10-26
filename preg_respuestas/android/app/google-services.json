@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1070410216577",
+    "firebase_url": "https://parapreguntarbackend.firebaseio.com",
+    "project_id": "parapreguntarbackend",
+    "storage_bucket": "parapreguntarbackend.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070410216577:android:757aeea3a6a0492e1b8980",
+        "android_client_info": {
+          "package_name": "com.example.preg_respuestas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1070410216577-8gtagektsrr0b8uk1e34sq7kcftgs1pn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiBCfU5Z1yJWe5TRDxHr9UVkTKMT7JRCA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070410216577-8gtagektsrr0b8uk1e34sq7kcftgs1pn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

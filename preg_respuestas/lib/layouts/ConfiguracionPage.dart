@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:preg_respuestas/modelos/login_state.dart';
+import 'package:provider/provider.dart';
 
 //TODO: TENGO QUE RECIBIR AL USUARIO TAMBIEN
 class ConfiguracionPage extends StatefulWidget {
@@ -49,6 +51,17 @@ class _ConfiguracionPageState extends State<ConfiguracionPage> {
               ),
               title: Text("Texto a voz"),
               trailing: Text("Desactivado"),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(
+                Icons.announcement_sharp,
+                color: Colors.indigo,
+              ),
+              title: Text("Cerrar sesion"),
+              onTap: () {
+                context.read<LoginState>().logout();
+              },
             ),
           ],
         ),

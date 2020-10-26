@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:preg_respuestas/modelos/Usuario.dart';
 
 class Registro extends StatefulWidget {
   @override
@@ -17,6 +18,8 @@ class _RegistroState extends State<Registro> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _password2Controller = TextEditingController();
+
+  final _registroFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +66,7 @@ class _RegistroState extends State<Registro> {
     return Padding(
       padding: EdgeInsets.only(top: 20.0),
       child: Form(
+        key: _registroFormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -181,6 +185,9 @@ class _RegistroState extends State<Registro> {
                 if (value.isEmpty) {
                   return 'Este campo no puede estar vacio';
                 }
+                if (_passwordController.text != _password2Controller.text) {
+                  return "Las contraseñas no coinciden";
+                }
               },
             ),
             Padding(
@@ -191,7 +198,17 @@ class _RegistroState extends State<Registro> {
                       borderRadius: BorderRadius.all(Radius.circular(30.0))),
                   padding: EdgeInsets.symmetric(horizontal: 50.0),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, 'homePage');
+                    if (_registroFormKey.currentState.validate()) {
+                      Map<String, String> datosUsuario = {
+                        'nombre': _nombreController.text,
+                        'apellido': _apellidoController.text,
+                        'email': _emailController.text,
+                        'password': _passwordController.text,
+                      };
+                      if (registrarUsuario(datosUsuario)) {
+                        Navigator.pushReplacementNamed(context, 'homePage');
+                      }
+                    }
                   },
                   color: Colors.white,
                   child: Text(

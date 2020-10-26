@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:preg_respuestas/modelos/Usuario.dart';
+import 'package:preg_respuestas/modelos/login_state.dart';
+import 'package:provider/provider.dart';
 
 class IniciarSesion extends StatefulWidget {
   @override
@@ -11,6 +14,8 @@ class _IniciarSesionState extends State<IniciarSesion> {
 
   final _usuarioController = new TextEditingController();
   final _passwordController = new TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   bool checkedValue = false;
 
@@ -60,108 +65,114 @@ class _IniciarSesionState extends State<IniciarSesion> {
     return Padding(
       padding: const EdgeInsets.only(top: 40.0),
       child: Form(
+          key: _formKey,
           child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Email",
-            style: TextStyle(color: Colors.white, fontSize: 18.0),
-          ),
-          TextFormField(
-            style: TextStyle(color: Colors.white),
-            focusNode: _usuario,
-            controller: _usuarioController,
-            onFieldSubmitted: (term) {
-              cambiarFocoCampo(context, _usuario, _password);
-            },
-            decoration: InputDecoration(
-              hintStyle: TextStyle(color: Colors.white),
-              hintText: 'Ej: usuario@email.com',
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Este campo no puede estar vacio';
-              }
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: Text(
-              "Contraseña",
-              style: TextStyle(color: Colors.white, fontSize: 18.0),
-            ),
-          ),
-          TextFormField(
-            style: TextStyle(color: Colors.white),
-            focusNode: _password,
-            controller: _passwordController,
-            onFieldSubmitted: (term) {
-              //cambiarFocoCampo(context, _titulo, _descripcion);
-            },
-            decoration: InputDecoration(
-                hintText: 'Password',
-                hintStyle: TextStyle(color: Colors.white)),
-            obscureText: true,
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Este campo no puede estar vacio';
-              }
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 15.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "¿Olvidaste la contraseña?",
-                  style: TextStyle(color: Colors.white),
-                ),
-                FlatButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Recuperar",
-                      style: TextStyle(color: Colors.white),
-                    ))
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 15.0),
-            child: CheckboxListTile(
-                dense: true,
-                checkColor: Colors.white,
-                title: Text(
-                  "Recordarme",
-                  style: TextStyle(color: Colors.white),
-                ),
-                value: checkedValue,
-                onChanged: (value) {
-                  setState(() {
-                    checkedValue = value;
-                  });
-                }),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 40.0),
-            child: Center(
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30.0))),
-                padding: EdgeInsets.symmetric(horizontal: 50.0),
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'homePage');
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Email",
+                style: TextStyle(color: Colors.white, fontSize: 18.0),
+              ),
+              TextFormField(
+                style: TextStyle(color: Colors.white),
+                focusNode: _usuario,
+                controller: _usuarioController,
+                onFieldSubmitted: (term) {
+                  cambiarFocoCampo(context, _usuario, _password);
                 },
-                color: Colors.white,
+                decoration: InputDecoration(
+                  hintStyle: TextStyle(color: Colors.white),
+                  hintText: 'Ej: usuario@email.com',
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Este campo no puede estar vacio';
+                  }
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
                 child: Text(
-                  "Iniciar Sesion",
-                  style: TextStyle(color: Colors.blue[800]),
+                  "Contraseña",
+                  style: TextStyle(color: Colors.white, fontSize: 18.0),
                 ),
               ),
-            ),
-          ),
-        ],
-      )),
+              TextFormField(
+                style: TextStyle(color: Colors.white),
+                focusNode: _password,
+                controller: _passwordController,
+                onFieldSubmitted: (term) {
+                  //cambiarFocoCampo(context, _titulo, _descripcion);
+                },
+                decoration: InputDecoration(
+                    hintText: 'Password',
+                    hintStyle: TextStyle(color: Colors.white)),
+                obscureText: true,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Este campo no puede estar vacio';
+                  }
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      "¿Olvidaste la contraseña?",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    FlatButton(
+                        onPressed: () {},
+                        child: Text(
+                          "Recuperar",
+                          style: TextStyle(color: Colors.white),
+                        ))
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: CheckboxListTile(
+                    dense: true,
+                    checkColor: Colors.white,
+                    title: Text(
+                      "Recordarme",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    value: checkedValue,
+                    onChanged: (value) {
+                      setState(() {
+                        checkedValue = value;
+                      });
+                    }),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 40.0),
+                child: Center(
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30.0))),
+                    padding: EdgeInsets.symmetric(horizontal: 50.0),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        print("Apretaste el boton");
+                        //Provider.of<LoginState>(context, listen: false).login();
+                        context.read<LoginState>().login(
+                            _usuarioController.text, _passwordController.text);
+                      }
+                    },
+                    color: Colors.white,
+                    child: Text(
+                      "Iniciar Sesion",
+                      style: TextStyle(color: Colors.blue[800]),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )),
     );
   }
 

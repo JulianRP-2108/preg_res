@@ -25,3 +25,14 @@ class Usuario {
     @required this.respuestas,
   });
 }
+
+//  ACA TENGO QUE HACER LA CONSULTA AL BACKEND
+bool iniciarSesionUsuario(String user, String password) {
+  return true;
+}
+
+//  ACA TENGO QUE REGISTRAR AL USUARIO
+//FIJARSE BIEN QUE VA A SER LO QUE SE VA A DEVOLVER
+bool registrarUsuario(Map<String, String> datos) {
+  return true;
+}
