@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:preg_respuestas/modelos/Usuario.dart';
 import 'package:preg_respuestas/modelos/login_state.dart';
+import 'package:preg_respuestas/widgets/alertaNotificacion.dart';
 import 'package:provider/provider.dart';
 
 class IniciarSesion extends StatefulWidget {
@@ -36,18 +37,33 @@ class _IniciarSesionState extends State<IniciarSesion> {
           backgroundColor: Colors.transparent),
       body: Container(
         padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 10.0),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
             gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 stops: [0.5, 1.0],
                 colors: [Color(0xff004e92), Color(0xff000428)])),
-        child: ListView(
-          children: [
-            //_encabezado(context), //Texto decorado de iniciar sesion
-            _formulario(context), //usuario, contraseña, boton aceptar
-            _extras(context), //Olvidaste contraseña? o ir a registrarse
-          ],
+        child: Consumer<LoginState>(
+          builder: (BuildContext context, LoginState value, Widget child) {
+            if (value.isLoading()) {
+              return Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              );
+            } else {
+              return child;
+            }
+          },
+          child: ListView(
+            children: [
+              //_encabezado(context), //Texto decorado de iniciar sesion
+              _formulario(context), //usuario, contraseña, boton aceptar
+              _extras(context), //Olvidaste contraseña? o ir a registrarse
+            ],
+          ),
         ),
       ),
     );
@@ -155,12 +171,30 @@ class _IniciarSesionState extends State<IniciarSesion> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(30.0))),
                     padding: EdgeInsets.symmetric(horizontal: 50.0),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState.validate()) {
                         print("Apretaste el boton");
-                        //Provider.of<LoginState>(context, listen: false).login();
-                        context.read<LoginState>().login(
-                            _usuarioController.text, _passwordController.text);
+
+                        context
+                            .read<LoginState>()
+                            .login(_usuarioController.text,
+                                _passwordController.text)
+                            .then((resultado) {
+                          if (!resultado['logueado']) {
+                            showDialog(
+                                barrierDismissible: true,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertaNotificacion(
+                                    titulo: "Error al iniciar sesion",
+                                    notificacion: resultado['mensaje'],
+                                  );
+                                });
+                          } else {
+                            Navigator.of(context)
+                                .pushReplacementNamed('/homePage');
+                          }
+                        });
                       }
                     },
                     color: Colors.white,
@@ -191,7 +225,7 @@ class _IniciarSesionState extends State<IniciarSesion> {
                 ),
                 FlatButton(
                     onPressed: () {
-                      Navigator.of(context).pushReplacementNamed("registro");
+                      Navigator.of(context).pushReplacementNamed("/registro");
                     },
                     child: Text(
                       "Registrate",

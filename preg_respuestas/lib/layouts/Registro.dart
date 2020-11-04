@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:preg_respuestas/modelos/Usuario.dart';
+import 'package:preg_respuestas/modelos/login_state.dart';
+import 'package:preg_respuestas/widgets/alertaNotificacion.dart';
+import 'package:provider/provider.dart';
 
 class Registro extends StatefulWidget {
   @override
@@ -37,6 +40,8 @@ class _RegistroState extends State<Registro> {
         ),
       ),
       body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 10.0),
           decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -44,12 +49,25 @@ class _RegistroState extends State<Registro> {
                   end: Alignment.bottomCenter,
                   stops: [0.5, 1.0],
                   colors: [Color(0xff004e92), Color(0xff000428)])),
-          child: ListView(
-            children: [
-              //_encabezado(context),
-              _formulario(context),
-              _extras(context),
-            ],
+          child: Consumer<LoginState>(
+            builder: (BuildContext context, LoginState value, Widget child) {
+              if (value.isLoading()) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  ),
+                );
+              } else {
+                return child;
+              }
+            },
+            child: ListView(
+              children: [
+                //_encabezado(context),
+                _formulario(context),
+                _extras(context),
+              ],
+            ),
           )),
     );
   }
@@ -197,7 +215,7 @@ class _RegistroState extends State<Registro> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(30.0))),
                   padding: EdgeInsets.symmetric(horizontal: 50.0),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_registroFormKey.currentState.validate()) {
                       Map<String, String> datosUsuario = {
                         'nombre': _nombreController.text,
@@ -205,9 +223,25 @@ class _RegistroState extends State<Registro> {
                         'email': _emailController.text,
                         'password': _passwordController.text,
                       };
-                      if (registrarUsuario(datosUsuario)) {
-                        Navigator.pushReplacementNamed(context, 'homePage');
-                      }
+                      context
+                          .read<LoginState>()
+                          .registerUser(datosUsuario)
+                          .then((resultado) {
+                        if (!resultado['registrado']) {
+                          showDialog(
+                              barrierDismissible: true,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertaNotificacion(
+                                  titulo: "Error al registrarse",
+                                  notificacion: resultado['mensaje'],
+                                );
+                              });
+                        } else {
+                          Navigator.of(context)
+                              .pushReplacementNamed('/homePage');
+                        }
+                      });
                     }
                   },
                   color: Colors.white,
@@ -240,7 +274,7 @@ class _RegistroState extends State<Registro> {
                 FlatButton(
                     onPressed: () {
                       Navigator.of(context)
-                          .pushReplacementNamed("iniciarSesion");
+                          .pushReplacementNamed("/iniciarSesion");
                     },
                     child: Text(
                       "Inicia Sesion",

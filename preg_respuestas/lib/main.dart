@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:preg_respuestas/layouts/ErrorLayout.dart';
 import 'package:preg_respuestas/layouts/HomePage.dart';
 import 'package:preg_respuestas/layouts/IniciarSesion.dart';
 import 'package:preg_respuestas/layouts/PreguntaPage.dart';
@@ -20,24 +21,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _initialization,
+      future: _initialization, //ESTO ES PARA LA INICIALIZACION DE FIREBASE
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return AlertDialog(
-            content: Text("Ocurrio un error"),
-            actions: [
-              RaisedButton(
-                  child: Text("Aceptar"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  })
-            ],
-          );
+          return ErrorLayout();
         }
         if (snapshot.connectionState == ConnectionState.done) {
           return MultiProvider(
             providers: [
-              ChangeNotifierProvider<LoginState>(create: (_) => LoginState())
+              ChangeNotifierProvider<LoginState>(
+                create: (_) => LoginState(),
+                lazy: false,
+              )
             ],
             child: MaterialApp(
               title: 'ParaPreguntar',
@@ -45,11 +40,11 @@ class MyApp extends StatelessWidget {
                 primarySwatch: Colors.blue,
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),
-              initialRoute: "iniciarSesion",
               routes: {
                 "/": (BuildContext context) {
-                  var state = Provider.of<LoginState>(context);
-                  if (state.isLoggedIn()) {
+                  //var state = Provider.of<LoginState>(context);
+
+                  if (context.watch<LoginState>().isLoggedIn()) {
                     return HomePage();
                   } else {
                     return IniciarSesion();
