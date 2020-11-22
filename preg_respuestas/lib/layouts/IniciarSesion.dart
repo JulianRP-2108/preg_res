@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:preg_respuestas/modelos/AuthHelper.dart';
 import 'package:preg_respuestas/modelos/Usuario.dart';
-import 'package:preg_respuestas/modelos/login_state.dart';
 import 'package:preg_respuestas/widgets/alertaNotificacion.dart';
 import 'package:provider/provider.dart';
+
+import 'HomePage.dart';
 
 class IniciarSesion extends StatefulWidget {
   @override
@@ -16,57 +19,70 @@ class _IniciarSesionState extends State<IniciarSesion> {
   final _usuarioController = new TextEditingController();
   final _passwordController = new TextEditingController();
 
+  bool isLoading = false;
+
   final _formKey = GlobalKey<FormState>();
 
   bool checkedValue = false;
 
   @override
+  void initState() {
+    super.initState();
+    this.isLoading = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          elevation: 0.0,
-          centerTitle: true,
-          title: Text(
-            "Iniciar Sesion",
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.transparent),
-      body: Container(
-        padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 10.0),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0.5, 1.0],
-                colors: [Color(0xff004e92), Color(0xff000428)])),
-        child: Consumer<LoginState>(
-          builder: (BuildContext context, LoginState value, Widget child) {
-            if (value.isLoading()) {
-              return Center(
-                child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                ),
-              );
-            } else {
-              return child;
-            }
-          },
-          child: ListView(
-            children: [
-              //_encabezado(context), //Texto decorado de iniciar sesion
-              _formulario(context), //usuario, contraseña, boton aceptar
-              _extras(context), //Olvidaste contraseña? o ir a registrarse
-            ],
-          ),
-        ),
-      ),
-    );
+    return StreamBuilder<User>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            this.isLoading = false;
+            dispose();
+            return HomePage();
+          } else {
+            return Scaffold(
+              extendBodyBehindAppBar: true,
+              appBar: AppBar(
+                  elevation: 0.0,
+                  centerTitle: true,
+                  title: Text(
+                    "Iniciar Sesion",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  backgroundColor: Colors.transparent),
+              body: Container(
+                padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 10.0),
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0.5, 1.0],
+                        colors: [Color(0xff004e92), Color(0xff000428)])),
+                child: this.isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                      )
+                    : ListView(
+                        children: [
+                          //_encabezado(context), //Texto decorado de iniciar sesion
+                          _formulario(
+                              context), //usuario, contraseña, boton aceptar
+                          _extras(
+                              context), //Olvidaste contraseña? o ir a registrarse
+                        ],
+                      ),
+              ),
+            );
+          }
+        });
   }
 
   _encabezado(BuildContext context) {
@@ -174,27 +190,29 @@ class _IniciarSesionState extends State<IniciarSesion> {
                     onPressed: () async {
                       if (_formKey.currentState.validate()) {
                         print("Apretaste el boton");
-
-                        context
-                            .read<LoginState>()
-                            .login(_usuarioController.text,
-                                _passwordController.text)
-                            .then((resultado) {
-                          if (!resultado['logueado']) {
-                            showDialog(
-                                barrierDismissible: true,
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertaNotificacion(
-                                    titulo: "Error al iniciar sesion",
-                                    notificacion: resultado['mensaje'],
-                                  );
-                                });
-                          } else {
-                            Navigator.of(context)
-                                .pushReplacementNamed('/homePage');
-                          }
+                        setState(() {
+                          this.isLoading = true;
                         });
+                        try {
+                          final user = await AuthHelper.signInWithEmail(
+                              email: _usuarioController.text,
+                              password: _passwordController.text);
+                          if (user != null) {
+                            print("Iniciaste sesion correctamente");
+                          }
+                        } on FirebaseAuthException catch (e) {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertaNotificacion(
+                                  titulo: "Error al iniciar sesion",
+                                  notificacion: e.message,
+                                );
+                              });
+                          setState(() {
+                            this.isLoading = false;
+                          });
+                        }
                       }
                     },
                     color: Colors.white,
@@ -243,5 +261,12 @@ class _IniciarSesionState extends State<IniciarSesion> {
       BuildContext context, FocusNode focoActual, FocusNode focoSiguiente) {
     focoActual.unfocus();
     FocusScope.of(context).requestFocus(focoSiguiente);
+  }
+
+  @override
+  void dispose() {
+    _usuarioController.clear();
+    _passwordController.clear();
+    super.dispose();
   }
 }

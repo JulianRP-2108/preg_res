@@ -31,7 +31,8 @@ dependencies:
   persistent_bottom_nav_bar: any
   flappy_search_bar: 1.7.2
   cloud_firestore:
-  firebase_auth: "^0.18.1+2"
+  firebase_core: ^0.5.0
+  firebase_auth: ^0.18.1+2
   provider:
 
 dev_dependencies:

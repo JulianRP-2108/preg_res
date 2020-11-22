@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:preg_respuestas/layouts/ConfiguracionPage.dart';
@@ -29,6 +30,7 @@ class _PerfilPageState extends State<PerfilPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (FirebaseAuth.instance.currentUser == null) {}
     return Scaffold(
       appBar: AppBar(
         title: Text(

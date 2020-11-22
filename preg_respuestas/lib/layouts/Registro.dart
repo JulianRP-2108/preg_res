@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:preg_respuestas/layouts/HomePage.dart';
+import 'package:preg_respuestas/modelos/AuthHelper.dart';
 import 'package:preg_respuestas/modelos/Usuario.dart';
-import 'package:preg_respuestas/modelos/login_state.dart';
 import 'package:preg_respuestas/widgets/alertaNotificacion.dart';
 import 'package:provider/provider.dart';
 
@@ -23,52 +25,60 @@ class _RegistroState extends State<Registro> {
   final _password2Controller = TextEditingController();
 
   final _registroFormKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: Color(0xfffafafa),
-      appBar: AppBar(
-        elevation: 0.0,
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          "Registrarse",
-          style: TextStyle(
-              color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
-        ),
-      ),
-      body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 10.0),
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: [0.5, 1.0],
-                  colors: [Color(0xff004e92), Color(0xff000428)])),
-          child: Consumer<LoginState>(
-            builder: (BuildContext context, LoginState value, Widget child) {
-              if (value.isLoading()) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-                );
-              } else {
-                return child;
-              }
-            },
-            child: ListView(
-              children: [
-                //_encabezado(context),
-                _formulario(context),
-                _extras(context),
-              ],
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          this.isLoading = false;
+          dispose();
+          return HomePage();
+        } else {
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            backgroundColor: Color(0xfffafafa),
+            appBar: AppBar(
+              elevation: 0.0,
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              title: Text(
+                "Registrarse",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
-          )),
+            body: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 10.0),
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [0.5, 1.0],
+                      colors: [Color(0xff004e92), Color(0xff000428)])),
+              child: this.isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                      ),
+                    )
+                  : ListView(
+                      children: [
+                        //_encabezado(context),
+                        _formulario(context),
+                        _extras(context),
+                      ],
+                    ),
+            ),
+          );
+        }
+      },
     );
   }
 
@@ -121,7 +131,7 @@ class _RegistroState extends State<Registro> {
               focusNode: _apellido,
               controller: _apellidoController,
               onFieldSubmitted: (term) {
-                cambiarFocoCampo(context, _apellido, _password);
+                cambiarFocoCampo(context, _apellido, _email);
               },
               decoration: InputDecoration(
                 hintStyle: TextStyle(color: Colors.white),
@@ -223,25 +233,29 @@ class _RegistroState extends State<Registro> {
                         'email': _emailController.text,
                         'password': _passwordController.text,
                       };
-                      context
-                          .read<LoginState>()
-                          .registerUser(datosUsuario)
-                          .then((resultado) {
-                        if (!resultado['registrado']) {
-                          showDialog(
-                              barrierDismissible: true,
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertaNotificacion(
-                                  titulo: "Error al registrarse",
-                                  notificacion: resultado['mensaje'],
-                                );
-                              });
-                        } else {
-                          Navigator.of(context)
-                              .pushReplacementNamed('/homePage');
-                        }
+                      setState(() {
+                        this.isLoading = true;
                       });
+                      try {
+                        final user = await AuthHelper.register(
+                            email: _emailController.text,
+                            password: _passwordController.text);
+                        if (user != null) {
+                          print("TE REGISTRASTE EXITOSAMENTE");
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertaNotificacion(
+                                titulo: "Error al registrarse",
+                                notificacion: e.message,
+                              );
+                            });
+                        setState(() {
+                          this.isLoading = false;
+                        });
+                      }
                     }
                   },
                   color: Colors.white,
@@ -286,6 +300,16 @@ class _RegistroState extends State<Registro> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nombreController.clear();
+    _apellidoController.clear();
+    _emailController.clear();
+    _passwordController.clear();
+    _password2Controller.clear();
+    super.dispose();
   }
 
   void cambiarFocoCampo(

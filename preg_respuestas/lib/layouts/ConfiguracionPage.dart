@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:preg_respuestas/modelos/login_state.dart';
+import 'package:preg_respuestas/modelos/AuthHelper.dart';
 import 'package:provider/provider.dart';
 
 //TODO: TENGO QUE RECIBIR AL USUARIO TAMBIEN
@@ -60,7 +62,7 @@ class _ConfiguracionPageState extends State<ConfiguracionPage> {
               ),
               title: Text("Cerrar sesion"),
               onTap: () {
-                context.read<LoginState>().logout();
+                AuthHelper.logOut();
               },
             ),
           ],
