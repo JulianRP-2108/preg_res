@@ -38,7 +38,7 @@ class _IniciarSesionState extends State<IniciarSesion> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             this.isLoading = false;
-            dispose();
+            limpiarControllers();
             return HomePage();
           } else {
             return Scaffold(
@@ -263,10 +263,8 @@ class _IniciarSesionState extends State<IniciarSesion> {
     FocusScope.of(context).requestFocus(focoSiguiente);
   }
 
-  @override
-  void dispose() {
+  void limpiarControllers() {
     _usuarioController.clear();
     _passwordController.clear();
-    super.dispose();
   }
 }

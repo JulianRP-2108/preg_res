@@ -19,15 +19,15 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Color(0xff004e92),
         title: Text(
           "Nueva Pregunta",
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Container(
           margin: EdgeInsets.all(20.0),
@@ -137,7 +137,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                   child: IconButton(
                     icon: Icon(
                       Icons.photo_camera_outlined,
-                      color: Colors.greenAccent,
+                      color: Color(0xff004e92),
                     ),
                     onPressed: () {
                       print("Sacando fotuli"); //MANEJAR EL TEMA DE LOS PERMISOS
@@ -149,7 +149,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                   child: Align(
                     alignment: Alignment.center,
                     child: RaisedButton(
-                      color: Colors.greenAccent,
+                      color: Color(0xffff8f00),
                       onPressed: () {
                         print("Pusheando pregunta");
                       },

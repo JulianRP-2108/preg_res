@@ -39,7 +39,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       body: cuerpo(context),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Color(0xffff8f00),
         child: Icon(
           Icons.question_answer_rounded,
           color: Colors.white,
@@ -76,13 +76,13 @@ class _SearchPageState extends State<SearchPage> {
             return Container(
               margin: EdgeInsets.only(top: 8.0),
               decoration: BoxDecoration(
-                  color: Colors.greenAccent[200],
+                  color: Color(0xff002764),
                   borderRadius: BorderRadius.all(Radius.circular(10.0))),
               child: ListTile(
                 visualDensity: VisualDensity.adaptivePlatformDensity,
                 title: Text(pregunta.titulo,
                     style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold)),
+                        color: Colors.white, fontWeight: FontWeight.bold)),
                 subtitle: Text(
                     '$index'), //ACA PODRIA METER LAS PALABRAS CLAVES COMO CHIP INPUTS
                 onTap: () => pushNewScreen(context,

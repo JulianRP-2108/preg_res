@@ -8,7 +8,6 @@ import 'package:preg_respuestas/layouts/IniciarSesion.dart';
 import 'package:preg_respuestas/layouts/PreguntaPage.dart';
 import 'package:preg_respuestas/layouts/Registro.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:preg_respuestas/modelos/login_state.dart';
 import 'package:provider/provider.dart';
 
 import 'layouts/SplashScreen.dart';

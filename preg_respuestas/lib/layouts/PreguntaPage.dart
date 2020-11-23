@@ -36,12 +36,12 @@ class _PreguntaPageState extends State<PreguntaPage> {
     return Scaffold(
       backgroundColor: Color(0xfffafafa),
       appBar: AppBar(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Color(0xff004e92),
         elevation: 0,
         centerTitle: true,
         title: Text(
           "AyudaPar", //CAMBIAR ETE NOMBRE NEFASTo
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         leading: Container(), //esto es solo para borrar la flecha hacia atras
       ),

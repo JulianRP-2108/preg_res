@@ -63,7 +63,7 @@ class _PerfilPageState extends State<PerfilPage> {
                 onPressed: () {
                   pushNewScreen(context, screen: ConfiguracionPage());
                 },
-                color: Colors.indigo,
+                color: Color(0xff4c79c3),
               ),
             )
           ],

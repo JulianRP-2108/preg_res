@@ -16,12 +16,15 @@ class NotificationTile extends StatelessWidget {
       ),
       key: ValueKey(""),
       child: Card(
-        color: Colors.blue[100],
+        color: Color(0xff004e92),
         child: ListTile(
           onTap: () {
             pushNewScreen(context, screen: PreguntaPage(), withNavBar: false);
           },
-          title: Text(this.titulo),
+          title: Text(
+            this.titulo,
+            style: TextStyle(color: Colors.white),
+          ),
           leading: Icon(Icons.notifications_active, color: Colors.redAccent),
           trailing: Icon(
             Icons.arrow_right,

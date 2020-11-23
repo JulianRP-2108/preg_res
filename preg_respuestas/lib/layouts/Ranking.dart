@@ -63,14 +63,16 @@ class _RankgingPageState extends State<RankgingPage> {
             value: categoria,
             iconSize: 24,
             elevation: 16,
-            style: TextStyle(color: Colors.blueAccent),
+            style: TextStyle(
+              color: Color(0xff004e92),
+            ),
             underline: Container(
               height: 2,
-              color: Colors.blueAccent,
+              color: Color(0xff004e92),
             ),
             icon: Icon(
               Icons.arrow_drop_down,
-              color: Colors.lightBlue,
+              color: Color(0xff004e92),
             ),
             onChanged: (String newValue) {
               setState(() {
@@ -96,7 +98,7 @@ class _RankgingPageState extends State<RankgingPage> {
 
     for (int i = 0; i < 20; i++) {
       tiles.add(RankingTile(
-          nombre: "Matias Ziliotto",
+          nombre: "Jacinto Araoz",
           profileImage:
               "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
           puntaje: "Ptos: 250"));
