@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:preg_respuestas/modelos/Pregunta.dart';
 import 'package:preg_respuestas/widgets/alertaConfirmacion.dart';
@@ -10,21 +11,9 @@ import 'package:preg_respuestas/widgets/alertaConfirmacion.dart';
 
 // ignore: must_be_immutable
 class PreguntaPage extends StatefulWidget {
-  Pregunta pregunta = new Pregunta(
-      titulo: "¿Como calcular area de un ciruclo?",
-      descripcion: "Esta es una descripcion cualquiera",
-      palabrasClave: [
-        "matematica",
-        "algebra",
-        "circulos",
-        "geometria",
-        "geometria",
-        "geometria",
-        "geometria",
-        "geometria"
-      ]);
+  Pregunta pregunta;
 
-  //PreguntaPage({@required this.pregunta});
+  PreguntaPage({@required this.pregunta});
 
   @override
   _PreguntaPageState createState() => _PreguntaPageState();
@@ -40,16 +29,15 @@ class _PreguntaPageState extends State<PreguntaPage> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          "AyudaPar", //CAMBIAR ETE NOMBRE NEFASTo
+          "ParAyudar",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         leading: Container(), //esto es solo para borrar la flecha hacia atras
       ),
       body: ListView(
         children: [
-          _encabezado(
-              context), //ACA IRIA LA PREGUNTA EN SI CON LAS PALABRAS CLAVES
-          _detalle(context), //ACA IRIA LA DESCRIPCION, DESPUES LA FOTO
+          _encabezado(context),
+          _detalle(context),
           _demasDatos(context),
           Container(
             margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
@@ -99,19 +87,21 @@ class _PreguntaPageState extends State<PreguntaPage> {
           Divider(
             color: Colors.black,
           ),
-          //RESOLVER EL TEMA DE LOS SALTOS DE LINEA
           Text(
-            "Este fin de semana tuvo lugar la Feria de Artesanos en los terrenos del ferrocarril, en el lugar estuvieron ubicados artesanos y artesanas de nuestra ciudad y de otras localidades pampeanas, con el fin de continuar ofreciendo espacios de comercialización y difusión para el sector.\n La Dirección de Educación y Cultura junto al Consejo Municipal de Artesanos, realizó una nueva Feria de Artesanos, ayer desde las 14 hasta las 18 horas. La actividad tenía previsto continuar desarrollándose hoy, pero debió suspenderse por las condiciones climáticas",
+            widget.pregunta.descripcion,
             style: TextStyle(),
             textAlign: TextAlign.justify,
           ),
           Card(
-            margin: EdgeInsets.symmetric(vertical: 10.0),
-            elevation: 10.0,
-            //espacio para foto
-            child: Image.network(
-                "https://images.twinkl.co.uk/tr/image/upload/illustation/Question-Marks.png"),
-          )
+              margin: EdgeInsets.symmetric(vertical: 10.0),
+              elevation: 10.0,
+              //espacio para foto
+
+              child: widget.pregunta.foto != null
+                  ? Image.network(
+                      widget.pregunta.foto,
+                    )
+                  : Container())
         ],
       ),
     );
@@ -151,19 +141,20 @@ class _PreguntaPageState extends State<PreguntaPage> {
 
   List<Widget> _getPalabrasClaves() {
     List<Widget> chips = new List<Widget>();
-    for (var clave in widget.pregunta.palabrasClave) {
-      chips.add(Padding(
-        padding: EdgeInsets.symmetric(horizontal: 3.0),
-        child: Chip(
-          label: Text(
-            clave,
-            style: TextStyle(fontSize: 11.0),
+    if (widget.pregunta.palabrasClave != null) {
+      for (var clave in widget.pregunta.palabrasClave) {
+        chips.add(Padding(
+          padding: EdgeInsets.symmetric(horizontal: 3.0),
+          child: Chip(
+            label: Text(
+              clave,
+              style: TextStyle(fontSize: 11.0),
+            ),
+            backgroundColor: Colors.grey[300],
           ),
-          backgroundColor: Colors.grey[300],
-        ),
-      ));
+        ));
+      }
     }
-
     return chips;
   }
 

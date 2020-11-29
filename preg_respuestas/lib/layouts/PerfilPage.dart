@@ -58,12 +58,12 @@ class _PerfilPageState extends State<PerfilPage> {
                     borderRadius: BorderRadius.all(Radius.circular(30.0))),
                 child: Text(
                   "Configuracion",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                 ),
                 onPressed: () {
                   pushNewScreen(context, screen: ConfiguracionPage());
                 },
-                color: Color(0xff4c79c3),
+                color: Color(0xffff8f00),
               ),
             )
           ],
