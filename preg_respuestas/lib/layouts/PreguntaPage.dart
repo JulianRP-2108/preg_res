@@ -23,8 +23,7 @@ class PreguntaPage extends StatefulWidget {
 class _PreguntaPageState extends State<PreguntaPage> {
   List<Respuesta> _respuestasData = new List<Respuesta>();
   String autorPregunta;
-  List<String> autoresRespuestas = new List<String>();
-
+  ScrollController controladorScroll = new ScrollController();
   @override
   void initState() {
     super.initState();
@@ -64,11 +63,35 @@ class _PreguntaPageState extends State<PreguntaPage> {
         leading: Container(), //esto es solo para borrar la flecha hacia atras
       ),
       body: ListView(
+        controller: this.controladorScroll,
         children: [
           _encabezado(context),
           _detalle(context),
           _demasDatos(
             context,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Align(
+              alignment: Alignment.center,
+              child: RaisedButton(
+                color: Color(0xffff8f00),
+                onPressed: () {
+                  this.controladorScroll.animateTo(
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                          ? this.controladorScroll.position.maxScrollExtent +
+                              MediaQuery.of(context).size.height
+                          : this.controladorScroll.position.maxScrollExtent +
+                              MediaQuery.of(context).size.width,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.ease);
+                },
+                padding: EdgeInsets.symmetric(horizontal: 30.0),
+                child: Text("Responder"),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)),
+              ),
+            ),
           ),
           Container(
             margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
@@ -80,8 +103,18 @@ class _PreguntaPageState extends State<PreguntaPage> {
                   color: Colors.black),
             ),
           ),
-          _respuestas(
-              context), //ACA IRIAN LAS RESPUESTAS EN CASO DE QUE LAS HUBIERA
+          _respuestas(context),
+          Container(
+            margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 8.0),
+            child: Text(
+              "Ayuda a tu compañero: ",
+              style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+            ),
+          ),
+          _formResponder(context)
         ],
       ),
     );
@@ -233,7 +266,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
             children: [
               Expanded(
                 child: Text(
-                  autorPregunta, //TODO:
+                  autorPregunta == null ? "" : autorPregunta, //TODO:
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -276,25 +309,6 @@ class _PreguntaPageState extends State<PreguntaPage> {
   Widget _demasDatosRespuestas(BuildContext context, int index) {
     String path =
         this._respuestasData[index].idAutor.split('/')[1].split(')')[0];
-    if (this.autoresRespuestas.length < this._respuestasData.length) {
-      FirebaseFirestore.instance
-          .collection("usuarios")
-          .doc(path)
-          .get()
-          .catchError((e) => print(e))
-          .then((usuario) {
-        if (usuario != null) {
-          print(usuario.data());
-          setState(() {
-            this.autoresRespuestas.insert(
-                index, usuario.get('nombre') + ' ' + usuario.get('Apellido'));
-            print(this.autoresRespuestas[index]);
-          });
-        } else {
-          print("Usuario no encontrado");
-        }
-      });
-    }
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
@@ -302,9 +316,22 @@ class _PreguntaPageState extends State<PreguntaPage> {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  this.autoresRespuestas[index],
-                  overflow: TextOverflow.ellipsis,
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("usuarios")
+                      .doc(path)
+                      .snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData) {
+                      return Text("");
+                    }
+                    return Text(
+                      snapshot.data.get('nombre') +
+                          ' ' +
+                          snapshot.data.get('Apellido'),
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  },
                 ),
               ),
               Container(
@@ -340,5 +367,85 @@ class _PreguntaPageState extends State<PreguntaPage> {
         ],
       ),
     );
+  }
+
+  //SOLO TIENE QUE TENER FOTO Y DESCRIPCION
+  //LA FECHA, PALABRAS CLAVE, ID DE LA PREGUNTA SE SACA DE LA PREGUNTA RECIBIDA
+  //EL ID DEL AUTOR SERA DEL USUARIO LOGUEADO
+  Widget _formResponder(BuildContext context) {
+    return Container(
+        margin: EdgeInsets.fromLTRB(20.0, 0, 20.0, 8.0),
+        child: SingleChildScrollView(
+            child: Form(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                child: Text(
+                  "Descripcion",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              TextFormField(
+                maxLines: 8,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                  hintText: 'Responde de forma clara y respetuosa',
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Este campo no puede estar vacio';
+                  }
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                child: Text(
+                  "Imagen (Opcional)",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Container(
+                height: 80,
+                width: 60,
+                decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.photo_camera_outlined,
+                    color: Color(0xff004e92),
+                  ),
+                  onPressed: () {
+                    print("Sacando fotuli"); //MANEJAR EL TEMA DE LOS PERMISOS
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: RaisedButton(
+                    color: Color(0xffff8f00),
+                    onPressed: () {
+                      //TODO: FALTA VALIDAR EL FORM
+                      print("Pusheando pregunta");
+                    },
+                    padding: EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Text("Realizar respuesta"),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0)),
+                  ),
+                ),
+              )
+            ]))));
   }
 }
