@@ -7,6 +7,7 @@ class Pregunta {
       this.palabrasClave,
       this.foto,
       this.id,
+      this.votos,
       this.idUsuario});
 
   String titulo;
@@ -14,5 +15,6 @@ class Pregunta {
   List<dynamic> palabrasClave; //ESTO SOLO LO HAGO PARA COMPATIBILIDAD CON BD
   String descripcion;
   String id;
-  int idUsuario;
+  String idUsuario;
+  int votos;
 }

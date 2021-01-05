@@ -98,7 +98,7 @@ class _SearchPageState extends State<SearchPage> {
     for (var i = 0; i < palabras.length; i++) {
       porPalabrasClave = await FirebaseFirestore.instance
           .collection('preguntas')
-          .where('palabrasClave', arrayContains: palabras)
+          .where('palabrasClave', whereIn: palabras)
           .limit(100)
           .get();
     }
@@ -110,6 +110,7 @@ class _SearchPageState extends State<SearchPage> {
         descripcion: porTitulo.docs[i].get('descripcion'),
         id: porTitulo.docs[i].id,
         foto: porTitulo.docs[i].get('Imagen'),
+        votos: porTitulo.docs[i].get('votos'),
         palabrasClave: porTitulo.docs[i].get('palabrasClaves'),
       ));
     }
@@ -129,6 +130,7 @@ class _SearchPageState extends State<SearchPage> {
           descripcion: porPalabrasClave.docs[i].get('descripcion'),
           id: porPalabrasClave.docs[i].id,
           foto: porPalabrasClave.docs[i].get('Imagen'),
+          votos: porPalabrasClave.docs[i].get('votos'),
           palabrasClave: porPalabrasClave.docs[i].get('palabrasClaves'),
         ));
       }

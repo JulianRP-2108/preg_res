@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:preg_respuestas/modelos/Pregunta.dart';
+import 'package:preg_respuestas/modelos/Respuesta.dart';
 import 'package:preg_respuestas/widgets/alertaConfirmacion.dart';
 
 /* 
@@ -20,6 +21,34 @@ class PreguntaPage extends StatefulWidget {
 }
 
 class _PreguntaPageState extends State<PreguntaPage> {
+  List<Respuesta> _respuestasData = new List<Respuesta>();
+  String autorPregunta;
+  List<String> autoresRespuestas = new List<String>();
+
+  @override
+  void initState() {
+    super.initState();
+    var referencia = FirebaseFirestore.instance
+        .collection('preguntas')
+        .doc(widget.pregunta.id);
+    FirebaseFirestore.instance
+        .collection('respuestas')
+        .where('idPregunta', isEqualTo: referencia)
+        .orderBy('votos', descending: true)
+        .get()
+        .catchError((e) => print(e))
+        .then((value) {
+      for (int i = 0; i < value.docs.length; i++) {
+        this._respuestasData.add(Respuesta(
+              descripcion: value.docs[i]['descripcion'],
+              idAutor: value.docs[i]['idAutor'].toString(),
+              idPregunta: value.docs[i]['idPregunta'].toString(),
+            ));
+      }
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +67,9 @@ class _PreguntaPageState extends State<PreguntaPage> {
         children: [
           _encabezado(context),
           _detalle(context),
-          _demasDatos(context),
+          _demasDatos(
+            context,
+          ),
           Container(
             margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
             child: Text(
@@ -87,10 +118,13 @@ class _PreguntaPageState extends State<PreguntaPage> {
           Divider(
             color: Colors.black,
           ),
-          Text(
-            widget.pregunta.descripcion,
-            style: TextStyle(),
-            textAlign: TextAlign.justify,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              widget.pregunta.descripcion,
+              style: TextStyle(),
+              textAlign: TextAlign.justify,
+            ),
           ),
           Card(
               margin: EdgeInsets.symmetric(vertical: 10.0),
@@ -109,12 +143,12 @@ class _PreguntaPageState extends State<PreguntaPage> {
 
   //Aca, para cada respuesta que se tenga hay que repetir el widget
   Widget _respuestas(BuildContext context) {
-    List<Widget> respuestas = new List<Widget>();
-    for (int i = 0; i < 10; i++) {
-      respuestas.add(Column(
+    List<Widget> respuestasWidget = new List<Widget>();
+    for (int i = 0; i < this._respuestasData.length; i++) {
+      respuestasWidget.add(Column(
         children: [
           Text(
-            "Este fin de semana tuvo lugar la Feria de Artesanos en los terrenos del ferrocarril, en el lugar estuvieron ubicados artesanos y artesanas de nuestra ciudad y de otras localidades pampeanas, con el fin de continuar ofreciendo espacios de comercialización y difusión para el sector.\n La Dirección de Educación y Cultura junto al Consejo Municipal de Artesanos, realizó una nueva Feria de Artesanos, ayer desde las 14 hasta las 18 horas. La actividad tenía previsto continuar desarrollándose hoy, pero debió suspenderse por las condiciones climáticas",
+            this._respuestasData[i].descripcion,
             style: TextStyle(),
             textAlign: TextAlign.justify,
           ),
@@ -122,11 +156,11 @@ class _PreguntaPageState extends State<PreguntaPage> {
             margin: EdgeInsets.symmetric(vertical: 10.0),
             elevation: 10.0,
             //espacio para foto
-            child: Image.network(
-                "https://images.twinkl.co.uk/tr/image/upload/illustation/Question-Marks.png"),
+            child: this._respuestasData[i].foto != null
+                ? Image.network(this._respuestasData[i].foto)
+                : Container(),
           ),
-          _demasDatos(
-              context), //TODO: LLAMAR A ESTA FUNCION CON LOS DATOS CORRESPONDIENTES
+          _demasDatosRespuestas(context, i),
           Divider(
             color: Colors.black,
           ),
@@ -135,7 +169,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
     }
     return Container(
       margin: EdgeInsets.all(10.0),
-      child: Column(children: respuestas),
+      child: Column(children: respuestasWidget),
     );
   }
 
@@ -158,8 +192,39 @@ class _PreguntaPageState extends State<PreguntaPage> {
     return chips;
   }
 
-  //username, idpregunta o id respuesta, tipo si es pregunta o respuesta
   Widget _demasDatos(BuildContext context) {
+    DocumentReference userReference;
+    if (this.autorPregunta == null) {
+      FirebaseFirestore.instance
+          .collection("preguntas")
+          .doc(widget.pregunta.id)
+          .get()
+          .catchError((e) => print(e))
+          .then((pregunta) {
+        if (pregunta != null) {
+          userReference = pregunta.get('idAutor');
+          String path = userReference.path.split('/')[1];
+          FirebaseFirestore.instance
+              .collection("usuarios")
+              .doc(path)
+              .get()
+              .catchError((e) => print(e))
+              .then((usuario) {
+            if (usuario != null) {
+              setState(() {
+                autorPregunta =
+                    usuario.get('nombre') + ' ' + usuario.get('Apellido');
+              });
+            } else {
+              print("Usuario no encontrado");
+            }
+          });
+        } else {
+          print("Entre aca");
+        }
+      });
+    }
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
@@ -168,7 +233,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
             children: [
               Expanded(
                 child: Text(
-                  "@Username_23sadfgfgjhhgfdsfkkjhgfdshgfdkjhgffdkjhgf",
+                  autorPregunta, //TODO:
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -176,7 +241,77 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 child: Row(
                   children: [
                     Text(
-                      "(25)",
+                      "(" + widget.pregunta.votos.toString() + ")",
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.volunteer_activism),
+                        onPressed: () {
+                          print("pregunta votada");
+                        }),
+                    IconButton(
+                        icon: Icon(Icons.report_gmailerrorred_rounded),
+                        onPressed: () {
+                          print("Pregunta reportada");
+                          showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ALertaConfirmacion(
+                                    pregunta:
+                                        "¿Desea reportar la pregunta (IDPregunta)?",
+                                    titulo: "Reporte");
+                              });
+                        })
+                  ],
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  //username, idpregunta o id respuesta, tipo si es pregunta o respuesta
+  Widget _demasDatosRespuestas(BuildContext context, int index) {
+    String path =
+        this._respuestasData[index].idAutor.split('/')[1].split(')')[0];
+    if (this.autoresRespuestas.length < this._respuestasData.length) {
+      FirebaseFirestore.instance
+          .collection("usuarios")
+          .doc(path)
+          .get()
+          .catchError((e) => print(e))
+          .then((usuario) {
+        if (usuario != null) {
+          print(usuario.data());
+          setState(() {
+            this.autoresRespuestas.insert(
+                index, usuario.get('nombre') + ' ' + usuario.get('Apellido'));
+            print(this.autoresRespuestas[index]);
+          });
+        } else {
+          print("Usuario no encontrado");
+        }
+      });
+    }
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  this.autoresRespuestas[index],
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Container(
+                child: Row(
+                  children: [
+                    Text(
+                      "(" + this._respuestasData[index].votos.toString() + ")",
                     ),
                     IconButton(
                         icon: Icon(Icons.volunteer_activism),
