@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Respuesta {
@@ -15,4 +16,20 @@ class Respuesta {
   String idPregunta;
   String idAutor;
   int votos;
+
+  void respuestaPost(Respuesta respuesta) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    DocumentReference referenciaPregunta =
+        db.doc('/preguntas/' + respuesta.idPregunta);
+    DocumentReference referenciaAutor =
+        db.doc('/usuarios/' + respuesta.idAutor);
+    await FirebaseFirestore.instance.collection('respuestas').add({
+      'descripcion': respuesta.descripcion,
+      'foto': respuesta.foto,
+      'idPregunta': referenciaPregunta,
+      'idAutor': referenciaAutor,
+      //'fecha' : TODO: SACAR LA FECHA ACTUAL
+      'votos': 0
+    });
+  }
 }

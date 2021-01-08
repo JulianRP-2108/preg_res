@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:preg_respuestas/modelos/Pregunta.dart';
 import 'package:preg_respuestas/modelos/Respuesta.dart';
@@ -24,6 +25,9 @@ class _PreguntaPageState extends State<PreguntaPage> {
   List<Respuesta> _respuestasData = new List<Respuesta>();
   String autorPregunta;
   ScrollController controladorScroll = new ScrollController();
+
+  TextEditingController controladorDescripcion = new TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -39,11 +43,11 @@ class _PreguntaPageState extends State<PreguntaPage> {
         .then((value) {
       for (int i = 0; i < value.docs.length; i++) {
         this._respuestasData.add(Respuesta(
-              descripcion: value.docs[i]['descripcion'],
-              idAutor: value.docs[i]['idAutor'].toString(),
-              idPregunta: value.docs[i]['idPregunta'].toString(),
-            ));
+            descripcion: value.docs[i]['descripcion'],
+            idAutor: value.docs[i]['idAutor'].toString(),
+            idPregunta: value.docs[i]['idPregunta'].toString()));
       }
+      print("La cantidad de respuestas es: ${this._respuestasData.length}");
       setState(() {});
     });
   }
@@ -307,8 +311,10 @@ class _PreguntaPageState extends State<PreguntaPage> {
 
   //username, idpregunta o id respuesta, tipo si es pregunta o respuesta
   Widget _demasDatosRespuestas(BuildContext context, int index) {
+    print(this._respuestasData[index].idAutor);
     String path =
         this._respuestasData[index].idAutor.split('/')[1].split(')')[0];
+    print(path);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
@@ -392,6 +398,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
               ),
               TextFormField(
                 maxLines: 8,
+                controller: this.controladorDescripcion,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10.0))),
@@ -437,7 +444,19 @@ class _PreguntaPageState extends State<PreguntaPage> {
                     color: Color(0xffff8f00),
                     onPressed: () {
                       //TODO: FALTA VALIDAR EL FORM
-                      print("Pusheando pregunta");
+                      final String uid = FirebaseAuth.instance.currentUser.uid;
+                      Respuesta respuesta = new Respuesta(
+                          descripcion: this.controladorDescripcion.text,
+                          idAutor: uid,
+                          idPregunta: widget.pregunta.id,
+                          foto: "");
+                      try {
+                        respuesta.respuestaPost(respuesta);
+                        print("La respuesta se hizo correctamente");
+                      } catch (e) {
+                        print("Hubo un error");
+                        print(e);
+                      }
                     },
                     padding: EdgeInsets.symmetric(horizontal: 30.0),
                     child: Text("Realizar respuesta"),
