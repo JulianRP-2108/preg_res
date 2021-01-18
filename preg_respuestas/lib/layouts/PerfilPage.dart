@@ -4,20 +4,20 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:preg_respuestas/layouts/ConfiguracionPage.dart';
 import 'package:preg_respuestas/modelos/Usuario.dart';
 
+// ignore: must_be_immutable
 class PerfilPage extends StatefulWidget {
-  Usuario usuario = Usuario(
-    id: 1,
-    nombre: "Julian",
-    apellido: "Rodriguez Petz",
-    email: "rodriguezpetzjulian@gmail.com",
-    profileImage:
-        "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    posAnual: 250,
-    posMensual: 12,
-    preguntas: 20,
-    puntaje: 350,
-    respuestas: 25,
-  );
+  //Usuario usuario = Usuario(
+  //    id: "",
+  //    nombre: "julian",
+  //    apellido: "Rodriguez Petz",
+  //    email: "rodriguezpetzjulian@gmail.com",
+  //    profileImage:
+  //        "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+  //    puntaje: 250,
+  //    posAnual: 12,
+  //    posMensual: 20,
+  //    preguntas: 350,
+  //    respuestas: 25);
   //PerfilPage({@required this.usuario});
 
   @override
@@ -90,13 +90,15 @@ class _PerfilPageState extends State<PerfilPage> {
               },
               child: CircleAvatar(
                 radius: 35.0,
-                backgroundImage: NetworkImage(widget.usuario.profileImage),
+                //backgroundImage: NetworkImage(widget.usuario.profileImage),
+                backgroundImage: NetworkImage(""),
               ),
             ),
           ),
           Expanded(
               child: Text(
-            widget.usuario.nombre + " " + widget.usuario.apellido,
+            "Julian Rodriguez Petz",
+            //widget.usuario.nombre + " " + widget.usuario.apellido,
             style: this.subtitulo,
           )),
         ],
@@ -110,7 +112,8 @@ class _PerfilPageState extends State<PerfilPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.usuario.email),
+          Text("rodriguezpetzjulian@gmail.com"),
+          //Text(widget.usuario.email),
           Padding(
             padding: EdgeInsets.only(top: 40.0, bottom: 20.0),
             child: Text(

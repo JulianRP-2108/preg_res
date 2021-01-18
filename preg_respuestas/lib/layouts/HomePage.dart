@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,6 +10,7 @@ import 'package:preg_respuestas/layouts/PerfilPage.dart';
 import 'package:preg_respuestas/layouts/Ranking.dart';
 import 'package:preg_respuestas/layouts/SearchPage.dart';
 import 'package:preg_respuestas/layouts/screenExample.dart';
+import 'package:preg_respuestas/modelos/Usuario.dart';
 
 import 'NotificationPage.dart';
 
@@ -22,6 +28,16 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _tabController = PersistentTabController(initialIndex: 1);
     _hideNavBar = false;
+    _manejoUsuario().then((exito) {
+      if (!exito) {
+        print("Ocurrio un error en el manejo de usuarios");
+        //exit(-1);
+      } else {
+        print("Salio todo bien, los datos del usuario son los siguientes:");
+        print(Usuario.getApellido());
+        print(Usuario.getEmail());
+      }
+    });
   }
 
   List<Widget> _buildScreens() {
@@ -59,6 +75,28 @@ class _HomePageState extends State<HomePage> {
         inactiveColor: Colors.grey,
       ),
     ];
+  }
+
+  //Aca puedo guardar al usuario en la base de datos
+  Future<bool> _manejoUsuario() async {
+    try {
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(FirebaseAuth.instance.currentUser.uid)
+          .get();
+      if (doc.exists) {
+        //cargar el singleton con los datos
+        Usuario.fromDocument(doc);
+      } else {
+        //ALMACENARLO
+        Usuario.almacenarUsuario();
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+
+    return true;
   }
 
   @override

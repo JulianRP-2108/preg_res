@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:preg_respuestas/layouts/HomePage.dart';
@@ -18,11 +19,11 @@ class _RegistroState extends State<Registro> {
   final FocusNode _password = new FocusNode();
   final FocusNode _password2 = new FocusNode();
 
-  final _nombreController = TextEditingController();
-  final _apellidoController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _password2Controller = TextEditingController();
+  TextEditingController _nombreController = TextEditingController();
+  TextEditingController _apellidoController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _password2Controller = TextEditingController();
 
   final _registroFormKey = GlobalKey<FormState>();
   bool isLoading = false;
@@ -34,7 +35,11 @@ class _RegistroState extends State<Registro> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           this.isLoading = false;
-          dispose();
+          _nombreController.text = '';
+          _apellidoController.text = '';
+          _emailController.text = '';
+          _passwordController.text = '';
+          _password2Controller.text = '';
           return HomePage();
         } else {
           return Scaffold(
@@ -70,7 +75,6 @@ class _RegistroState extends State<Registro> {
                     )
                   : ListView(
                       children: [
-                        //_encabezado(context),
                         _formulario(context),
                         _extras(context),
                       ],
@@ -79,14 +83,6 @@ class _RegistroState extends State<Registro> {
           );
         }
       },
-    );
-  }
-
-  _encabezado(BuildContext context) {
-    return Text(
-      "Registrarse",
-      style: TextStyle(
-          color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold),
     );
   }
 
@@ -237,12 +233,7 @@ class _RegistroState extends State<Registro> {
                         this.isLoading = true;
                       });
                       try {
-                        final user = await AuthHelper.register(
-                            email: _emailController.text,
-                            password: _passwordController.text);
-                        if (user != null) {
-                          print("TE REGISTRASTE EXITOSAMENTE");
-                        }
+                        await AuthHelper.register(datosUsuario);
                       } on FirebaseAuthException catch (e) {
                         showDialog(
                             context: context,
@@ -300,16 +291,6 @@ class _RegistroState extends State<Registro> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _nombreController.clear();
-    _apellidoController.clear();
-    _emailController.clear();
-    _passwordController.clear();
-    _password2Controller.clear();
-    super.dispose();
   }
 
   void cambiarFocoCampo(
