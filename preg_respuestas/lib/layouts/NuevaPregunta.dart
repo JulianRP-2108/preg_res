@@ -15,6 +15,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
   final FocusNode _palabrasClave = FocusNode();
 
   File _image;
+  final picker = ImagePicker();
 
   List<String> _palabrasClaveList = new List<String>();
 
@@ -23,20 +24,28 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
   final _descripcionController = TextEditingController();
 
   _imgFromCamera() async {
-    File image = await ImagePicker.pickImage(
-        source: ImageSource.camera, imageQuality: 50);
+    final pickedfile =
+        await picker.getImage(source: ImageSource.camera, imageQuality: 50);
 
     setState(() {
-      _image = image;
+      if (pickedfile != null) {
+        this._image = File(pickedfile.path);
+      } else {
+        print("No se ha seleccionado ninguna imagen");
+      }
     });
   }
 
   _imgFromGallery() async {
-    File image = await ImagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50);
+    final pickedfile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
 
     setState(() {
-      _image = image;
+      if (pickedfile != null) {
+        this._image = File(pickedfile.path);
+      } else {
+        print("No se ha seleccionado ninguna imagen");
+      }
     });
   }
 
@@ -185,11 +194,19 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                             _showPicker(context);
                           },
                         )
-                      : Image.file(
-                          _image,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.fitHeight,
+                      : GestureDetector(
+                          onTap: () => _showPicker(context),
+                          onLongPress: () {
+                            setState(() {
+                              this._image = null;
+                            });
+                          },
+                          child: Image.file(
+                            _image,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.fitHeight,
+                          ),
                         ),
                 ),
                 Padding(
