@@ -12,9 +12,13 @@ class Pregunta {
 
   String titulo;
   String foto;
-  List<dynamic> palabrasClave; //ESTO SOLO LO HAGO PARA COMPATIBILIDAD CON BD
+  List<String> palabrasClave; //ESTO SOLO LO HAGO PARA COMPATIBILIDAD CON BD
   String descripcion;
   String id;
   String idUsuario;
   int votos;
+
+  Future<bool> postPregunta(Pregunta preg) async {
+    return true;
+  }
 }

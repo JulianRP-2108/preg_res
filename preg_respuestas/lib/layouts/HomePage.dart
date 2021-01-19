@@ -31,7 +31,8 @@ class _HomePageState extends State<HomePage> {
     _manejoUsuario().then((exito) {
       if (!exito) {
         print("Ocurrio un error en el manejo de usuarios");
-        //exit(-1);
+        exit(-1);
+        //TODO: MEJOR MOSTRAR UN ALERT Y LUEGO CERRAR
       } else {
         print("Salio todo bien, los datos del usuario son los siguientes:");
         print(Usuario.getApellido());

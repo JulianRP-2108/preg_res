@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class NuevaPregunta extends StatefulWidget {
   @override
@@ -11,9 +14,31 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
   final FocusNode _descripcion = FocusNode();
   final FocusNode _palabrasClave = FocusNode();
 
+  File _image;
+
+  List<String> _palabrasClaveList = new List<String>();
+
   final _tituloController = TextEditingController();
   final _clavesController = TextEditingController();
   final _descripcionController = TextEditingController();
+
+  _imgFromCamera() async {
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  _imgFromGallery() async {
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +128,21 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                   //TODO: AL TOCAR EL ESPACIO QUE SE HAGAN CHIPS SI ES QUE SE PUEDEN, SINO PONERLOS ABAJO
                   focusNode: _palabrasClave,
                   controller: _clavesController,
+                  onChanged: (frase) {
+                    if (frase.isEmpty) {
+                      print("Entre al vacio");
+                      this._palabrasClaveList.clear();
+                    }
+                    if (frase.endsWith(' ')) {
+                      this._palabrasClaveList = frase.split(' ');
+                      this
+                          ._palabrasClaveList
+                          .removeWhere((element) => element.length <= 3);
+                      print("la lista completa es: ");
+                      print(this._palabrasClaveList);
+                    }
+                    setState(() {});
+                  },
                   onFieldSubmitted: (term) {
                     //TODO: QUE HACER ACA? ESCONDER EL TECLADO PARA QUE SE VEA EL BOTON DE LAS FOTOS?
                   },
@@ -118,6 +158,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                     }
                   },
                 ),
+                palabrasClaveContainer(context),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 15.0),
                   child: Text(
@@ -134,15 +175,22 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                   decoration: BoxDecoration(
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.photo_camera_outlined,
-                      color: Color(0xff004e92),
-                    ),
-                    onPressed: () {
-                      print("Sacando fotuli"); //MANEJAR EL TEMA DE LOS PERMISOS
-                    },
-                  ),
+                  child: this._image == null
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.photo_camera_outlined,
+                            color: Color(0xff004e92),
+                          ),
+                          onPressed: () {
+                            _showPicker(context);
+                          },
+                        )
+                      : Image.file(
+                          _image,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.fitHeight,
+                        ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -170,5 +218,62 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
       BuildContext context, FocusNode focoActual, FocusNode focoSiguiente) {
     focoActual.unfocus();
     FocusScope.of(context).requestFocus(focoSiguiente);
+  }
+
+  Widget palabrasClaveContainer(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+        child: Container(
+            height: 50.0,
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: this._palabrasClaveList.length == 0
+                    ? 1
+                    : this._palabrasClaveList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  if (this._palabrasClaveList.length == 0) {
+                    return Container();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: Chip(
+                      label: Text(
+                        this._palabrasClaveList[index],
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      backgroundColor: Colors.grey[200],
+                    ),
+                  );
+                })));
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Galeria'),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camara'),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
