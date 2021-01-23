@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class Pregunta {
@@ -8,17 +10,19 @@ class Pregunta {
       this.foto,
       this.id,
       this.votos,
-      this.idUsuario});
+      this.idUsuario,
+      this.fotoArchivo});
 
   String titulo;
   String foto;
-  List<String> palabrasClave; //ESTO SOLO LO HAGO PARA COMPATIBILIDAD CON BD
+  File fotoArchivo;
+  List<dynamic> palabrasClave; //ESTO SOLO LO HAGO PARA COMPATIBILIDAD CON BD
   String descripcion;
   String id;
   String idUsuario;
   int votos;
 
   Future<bool> postPregunta(Pregunta preg) async {
-    return true;
+    return false;
   }
 }
