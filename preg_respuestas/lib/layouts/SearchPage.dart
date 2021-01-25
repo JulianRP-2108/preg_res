@@ -109,9 +109,9 @@ class _SearchPageState extends State<SearchPage> {
         titulo: porTitulo.docs[i].get('titulo'),
         descripcion: porTitulo.docs[i].get('descripcion'),
         id: porTitulo.docs[i].id,
-        foto: porTitulo.docs[i].get('Imagen'),
+        foto: porTitulo.docs[i].get('foto'),
         votos: porTitulo.docs[i].get('votos'),
-        palabrasClave: porTitulo.docs[i].get('palabrasClaves'),
+        palabrasClave: porTitulo.docs[i].get('palabrasClave'),
       ));
     }
 
@@ -129,9 +129,9 @@ class _SearchPageState extends State<SearchPage> {
           titulo: porPalabrasClave.docs[i].get('titulo'),
           descripcion: porPalabrasClave.docs[i].get('descripcion'),
           id: porPalabrasClave.docs[i].id,
-          foto: porPalabrasClave.docs[i].get('Imagen'),
+          foto: porPalabrasClave.docs[i].get('foto'),
           votos: porPalabrasClave.docs[i].get('votos'),
-          palabrasClave: porPalabrasClave.docs[i].get('palabrasClaves'),
+          palabrasClave: porPalabrasClave.docs[i].get('palabrasClave'),
         ));
       }
     }

@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:preg_respuestas/modelos/Pregunta.dart';
 import 'package:preg_respuestas/modelos/Respuesta.dart';
 import 'package:preg_respuestas/widgets/alertaConfirmacion.dart';
@@ -26,6 +30,9 @@ class _PreguntaPageState extends State<PreguntaPage> {
   String autorPregunta;
   ScrollController controladorScroll = new ScrollController();
 
+  File _image;
+  final picker = ImagePicker();
+
   TextEditingController controladorDescripcion = new TextEditingController();
 
   @override
@@ -42,10 +49,14 @@ class _PreguntaPageState extends State<PreguntaPage> {
         .catchError((e) => print(e))
         .then((value) {
       for (int i = 0; i < value.docs.length; i++) {
-        this._respuestasData.add(Respuesta(
-            descripcion: value.docs[i]['descripcion'],
-            idAutor: value.docs[i]['idAutor'].toString(),
-            idPregunta: value.docs[i]['idPregunta'].toString()));
+        this._respuestasData.add(
+              Respuesta(
+                  descripcion: value.docs[i]['descripcion'],
+                  idAutor: value.docs[i]['idAutor'].toString(),
+                  idPregunta: value.docs[i]['idPregunta'].toString(),
+                  foto: value.docs[i]["foto"],
+                  votos: value.docs[i]['votos']),
+            );
       }
       print("La cantidad de respuestas es: ${this._respuestasData.length}");
       setState(() {});
@@ -81,14 +92,13 @@ class _PreguntaPageState extends State<PreguntaPage> {
               child: RaisedButton(
                 color: Color(0xffff8f00),
                 onPressed: () {
-                  this.controladorScroll.animateTo(
-                      MediaQuery.of(context).orientation == Orientation.portrait
-                          ? this.controladorScroll.position.maxScrollExtent +
-                              MediaQuery.of(context).size.height
-                          : this.controladorScroll.position.maxScrollExtent +
-                              MediaQuery.of(context).size.width,
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.ease);
+                  Timer(Duration(milliseconds: 500), () {
+                    this.controladorScroll.animateTo(
+                        this.controladorScroll.position.viewportDimension +
+                            this.controladorScroll.position.maxScrollExtent,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.ease);
+                  });
                 },
                 padding: EdgeInsets.symmetric(horizontal: 30.0),
                 child: Text("Responder"),
@@ -168,9 +178,13 @@ class _PreguntaPageState extends State<PreguntaPage> {
               elevation: 10.0,
               //espacio para foto
 
-              child: widget.pregunta.foto != null
-                  ? Image.network(
-                      widget.pregunta.foto,
+              child: widget.pregunta.foto != ""
+                  ? Container(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      child: Image.network(
+                        widget.pregunta.foto,
+                        fit: BoxFit.cover,
+                      ),
                     )
                   : Container())
         ],
@@ -193,8 +207,14 @@ class _PreguntaPageState extends State<PreguntaPage> {
             margin: EdgeInsets.symmetric(vertical: 10.0),
             elevation: 10.0,
             //espacio para foto
-            child: this._respuestasData[i].foto != null
-                ? Image.network(this._respuestasData[i].foto)
+            child: this._respuestasData[i].foto != ""
+                ? Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: Image.network(
+                      this._respuestasData[i].foto,
+                      fit: BoxFit.cover,
+                    ),
+                  )
                 : Container(),
           ),
           _demasDatosRespuestas(context, i),
@@ -232,6 +252,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
   Widget _demasDatos(BuildContext context) {
     DocumentReference userReference;
     if (this.autorPregunta == null) {
+      print(widget.pregunta.id);
       FirebaseFirestore.instance
           .collection("preguntas")
           .doc(widget.pregunta.id)
@@ -250,7 +271,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
             if (usuario != null) {
               setState(() {
                 autorPregunta =
-                    usuario.get('nombre') + ' ' + usuario.get('Apellido');
+                    usuario.get('nombre') + ' ' + usuario.get('apellido');
               });
             } else {
               print("Usuario no encontrado");
@@ -334,7 +355,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                     return Text(
                       snapshot.data.get('nombre') +
                           ' ' +
-                          snapshot.data.get('Apellido'),
+                          snapshot.data.get('apellido'),
                       overflow: TextOverflow.ellipsis,
                     );
                   },
@@ -344,7 +365,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 child: Row(
                   children: [
                     Text(
-                      "(" + this._respuestasData[index].votos.toString() + ")",
+                      "(${this._respuestasData[index].votos})",
                     ),
                     IconButton(
                         icon: Icon(Icons.volunteer_activism),
@@ -426,15 +447,30 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.photo_camera_outlined,
-                    color: Color(0xff004e92),
-                  ),
-                  onPressed: () {
-                    print("Sacando fotuli"); //MANEJAR EL TEMA DE LOS PERMISOS
-                  },
-                ),
+                child: this._image == null
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.photo_camera_outlined,
+                          color: Color(0xff004e92),
+                        ),
+                        onPressed: () {
+                          _showPicker(context);
+                        },
+                      )
+                    : GestureDetector(
+                        onTap: () => _showPicker(context),
+                        onLongPress: () {
+                          setState(() {
+                            this._image = null;
+                          });
+                        },
+                        child: Image.file(
+                          _image,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -449,7 +485,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                           descripcion: this.controladorDescripcion.text,
                           idAutor: uid,
                           idPregunta: widget.pregunta.id,
-                          foto: "");
+                          fotoArchivo: _image);
                       try {
                         respuesta.respuestaPost(respuesta);
                         print("La respuesta se hizo correctamente");
@@ -466,5 +502,61 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 ),
               )
             ]))));
+  }
+
+  _imgFromCamera() async {
+    final pickedfile =
+        await picker.getImage(source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      if (pickedfile != null) {
+        this._image = File(pickedfile.path);
+      } else {
+        print("No se ha seleccionado ninguna imagen");
+      }
+    });
+  }
+
+  _imgFromGallery() async {
+    final pickedfile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      if (pickedfile != null) {
+        this._image = File(pickedfile.path);
+      } else {
+        print("No se ha seleccionado ninguna imagen");
+      }
+    });
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Galeria'),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camara'),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

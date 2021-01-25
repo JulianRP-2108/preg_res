@@ -298,7 +298,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                         titulo: this._tituloController.text,
                         descripcion: this._descripcionController.text,
                         palabrasClave: this._palabrasClaveList,
-                        idUsuario: FirebaseAuth.instance.currentUser.uid,
+                        idAutor: FirebaseAuth.instance.currentUser.uid,
                         votos: 0,
                         foto: "",
                         fotoArchivo: this._image,
