@@ -165,22 +165,6 @@ class _IniciarSesionState extends State<IniciarSesion> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 15.0),
-                child: CheckboxListTile(
-                    dense: true,
-                    checkColor: Colors.white,
-                    title: Text(
-                      "Recordarme",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    value: checkedValue,
-                    onChanged: (value) {
-                      setState(() {
-                        checkedValue = value;
-                      });
-                    }),
-              ),
-              Padding(
                 padding: EdgeInsets.only(top: 40.0),
                 child: Center(
                   child: RaisedButton(
