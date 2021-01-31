@@ -82,7 +82,7 @@ class Usuario {
           .collection('usuarios')
           .doc(FirebaseAuth.instance.currentUser.uid)
           .set({
-        'id': Usuario.getId(),
+        'id': FirebaseAuth.instance.currentUser.uid,
         'nombre': Usuario.getNombre(),
         'apellido': Usuario.getApellido(),
         'email': Usuario.getEmail(),

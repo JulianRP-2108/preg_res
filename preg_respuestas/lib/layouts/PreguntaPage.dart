@@ -11,7 +11,8 @@ import 'package:preg_respuestas/widgets/alertaConfirmacion.dart';
 
 /* 
 
-  ESTA PANTALLA TIENE QUE RECIBIR LA PREGUNTA ENTERA
+  ESTA PANTALLA TIENE QUE RECIBIR LA PREGUNTA ENTERA,
+  Si el id del autor de la pregunta es el mismo que el id del usuario dejarlo eliminar
 
  */
 
@@ -250,38 +251,23 @@ class _PreguntaPageState extends State<PreguntaPage> {
   }
 
   Widget _demasDatos(BuildContext context) {
-    DocumentReference userReference;
-    if (this.autorPregunta == null) {
-      print(widget.pregunta.id);
-      FirebaseFirestore.instance
-          .collection("preguntas")
-          .doc(widget.pregunta.id)
-          .get()
-          .catchError((e) => print(e))
-          .then((pregunta) {
-        if (pregunta != null) {
-          userReference = pregunta.get('idAutor');
-          String path = userReference.path.split('/')[1];
-          FirebaseFirestore.instance
-              .collection("usuarios")
-              .doc(path)
-              .get()
-              .catchError((e) => print(e))
-              .then((usuario) {
-            if (usuario != null) {
-              setState(() {
-                autorPregunta =
-                    usuario.get('nombre') + ' ' + usuario.get('apellido');
-              });
-            } else {
-              print("Usuario no encontrado");
-            }
-          });
-        } else {
-          print("Entre aca");
-        }
-      });
-    }
+    DocumentReference autorReference =
+        FirebaseFirestore.instance.doc(widget.pregunta.idAutor);
+    String path = autorReference.path.split('/')[1];
+    FirebaseFirestore.instance
+        .collection("usuarios")
+        .doc(path)
+        .get()
+        .catchError((e) => print(e))
+        .then((usuario) {
+      if (usuario != null) {
+        setState(() {
+          autorPregunta = usuario.get('nombre') + ' ' + usuario.get('apellido');
+        });
+      } else {
+        print("Usuario no encontrado");
+      }
+    });
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
@@ -291,7 +277,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
             children: [
               Expanded(
                 child: Text(
-                  autorPregunta == null ? "" : autorPregunta, //TODO:
+                  autorPregunta == null ? "" : autorPregunta,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -301,6 +287,14 @@ class _PreguntaPageState extends State<PreguntaPage> {
                     Text(
                       "(" + widget.pregunta.votos.toString() + ")",
                     ),
+                    path == FirebaseAuth.instance.currentUser.uid
+                        ? IconButton(
+                            icon: Icon(Icons.highlight_remove_sharp),
+                            color: Colors.red[300],
+                            onPressed: () {
+                              print("Eliminando pregunta");
+                            })
+                        : Container(),
                     IconButton(
                         icon: Icon(Icons.volunteer_activism),
                         onPressed: () {
