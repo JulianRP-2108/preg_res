@@ -22,10 +22,10 @@ class Pregunta {
   List<dynamic> palabrasClave; //ESTO SOLO LO HAGO PARA COMPATIBILIDAD CON BD
   String descripcion;
   String id;
-  String idAutor;
+  DocumentReference idAutor;
   int votos;
 
-  Future<bool> postPregunta(Pregunta preg) async {
+  static Future<bool> postPregunta(Pregunta preg) async {
     //PRIMERO CREAR UNA REFERENCIA AL DOCUMENTO QUE VA A DIRECCIONAR LA IMAGEN
     String imageUrl;
     if (preg.fotoArchivo != null) {
@@ -40,13 +40,12 @@ class Pregunta {
     //SUBIR EL RESTO DEL DOCUMENTO
     try {
       FirebaseFirestore db = FirebaseFirestore.instance;
-      DocumentReference referenciaAutor = db.doc('/usuarios/' + preg.idAutor);
       await FirebaseFirestore.instance.collection('preguntas').add({
         'titulo': preg.titulo,
         'foto': imageUrl,
         'palabrasClave': preg.palabrasClave,
         'descripcion': preg.descripcion,
-        'idAutor': referenciaAutor,
+        'idAutor': preg.idAutor,
         'votos': 0
       });
     } catch (e) {
@@ -57,7 +56,7 @@ class Pregunta {
     return true;
   }
 
-  Future<String> uploadFile(File _image) async {
+  static Future<String> uploadFile(File _image) async {
     String resultado;
     String path = _image.path.split('/').last;
     try {
@@ -72,5 +71,47 @@ class Pregunta {
       print(e);
     }
     return resultado;
+  }
+
+  static Future<bool> eliminarPregunta(
+      String idPregunta, DocumentReference idAutor) async {
+    try {
+      DocumentReference referencia =
+          FirebaseFirestore.instance.collection('preguntas').doc(idPregunta);
+      QuerySnapshot respuestas = await FirebaseFirestore.instance
+          .collection('respuestas')
+          .where('idPregunta', isEqualTo: referencia)
+          .orderBy('votos', descending: true)
+          .get()
+          .catchError((e) => print(e));
+
+      print("Imprimiendo las respuestas");
+      //for (int i = 0; i < respuestas.docs.length; i++) {
+      //  FirebaseFirestore.instance
+      //      .collection('respuestas')
+      //      .doc(respuestas.docs[i].id)
+      //      .delete();
+      //  print(respuestas.docs[i].id);
+      //}
+      print("El id del usuario es: ");
+      print(FirebaseAuth.instance.currentUser.uid);
+      print("El id del autor: ");
+      print(idAutor);
+      print("El id de la pregunta es: ");
+      print(idPregunta);
+      print("El largo del id de la pregunta es: ");
+      print(idPregunta.length);
+      FirebaseFirestore.instance
+          .collection('preguntas')
+          .doc(idPregunta)
+          .delete()
+          .then((value) {
+        print("Pregunta eliminada desde preguntas");
+      });
+    } catch (e) {
+      print("Ocurrio un error en eliminarPregunta");
+      return false;
+    }
+    return true;
   }
 }

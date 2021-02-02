@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -298,13 +299,14 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                         titulo: this._tituloController.text,
                         descripcion: this._descripcionController.text,
                         palabrasClave: this._palabrasClaveList,
-                        idAutor: FirebaseAuth.instance.currentUser.uid,
+                        idAutor: FirebaseFirestore.instance.doc('/usuarios/' +
+                            FirebaseAuth.instance.currentUser.uid),
                         votos: 0,
                         foto: "",
                         fotoArchivo: this._image,
                         id: "",
                       );
-                      bool isUp = await preg.postPregunta(preg);
+                      bool isUp = await Pregunta.postPregunta(preg);
                       setState(() {
                         this.isloading = false;
                       });

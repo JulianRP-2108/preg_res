@@ -29,6 +29,7 @@ class PreguntaPage extends StatefulWidget {
 class _PreguntaPageState extends State<PreguntaPage> {
   List<Respuesta> _respuestasData = new List<Respuesta>();
   String autorPregunta;
+  String path;
   ScrollController controladorScroll = new ScrollController();
 
   File _image;
@@ -61,6 +62,30 @@ class _PreguntaPageState extends State<PreguntaPage> {
       }
       print("La cantidad de respuestas es: ${this._respuestasData.length}");
       setState(() {});
+    });
+
+    //Obtengo los datos del usuario
+    getUserData().then((value) {
+      setState(() {});
+    });
+  }
+
+  Future<void> getUserData() async {
+    DocumentReference autorReference = widget.pregunta.idAutor;
+    this.path = autorReference.path.split('/')[1];
+    FirebaseFirestore.instance
+        .collection("usuarios")
+        .doc(path)
+        .get()
+        .catchError((e) => print(e))
+        .then((usuario) {
+      if (usuario != null) {
+        setState(() {
+          autorPregunta = usuario.get('nombre') + ' ' + usuario.get('apellido');
+        });
+      } else {
+        print("Usuario no encontrado");
+      }
     });
   }
 
@@ -251,24 +276,6 @@ class _PreguntaPageState extends State<PreguntaPage> {
   }
 
   Widget _demasDatos(BuildContext context) {
-    DocumentReference autorReference =
-        FirebaseFirestore.instance.doc(widget.pregunta.idAutor);
-    String path = autorReference.path.split('/')[1];
-    FirebaseFirestore.instance
-        .collection("usuarios")
-        .doc(path)
-        .get()
-        .catchError((e) => print(e))
-        .then((usuario) {
-      if (usuario != null) {
-        setState(() {
-          autorPregunta = usuario.get('nombre') + ' ' + usuario.get('apellido');
-        });
-      } else {
-        print("Usuario no encontrado");
-      }
-    });
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
@@ -287,12 +294,21 @@ class _PreguntaPageState extends State<PreguntaPage> {
                     Text(
                       "(" + widget.pregunta.votos.toString() + ")",
                     ),
-                    path == FirebaseAuth.instance.currentUser.uid
+                    this.path == FirebaseAuth.instance.currentUser.uid
                         ? IconButton(
                             icon: Icon(Icons.highlight_remove_sharp),
                             color: Colors.red[300],
-                            onPressed: () {
-                              print("Eliminando pregunta");
+                            onPressed: () async {
+                              bool isEliminada =
+                                  await Pregunta.eliminarPregunta(
+                                      widget.pregunta.id,
+                                      widget.pregunta.idAutor);
+                              if (isEliminada) {
+                                print("Pregunta eliminada con exito");
+                              } else {
+                                print(
+                                    "Ocurrio un error eliminando la preugnta");
+                              }
                             })
                         : Container(),
                     IconButton(
@@ -326,10 +342,8 @@ class _PreguntaPageState extends State<PreguntaPage> {
 
   //username, idpregunta o id respuesta, tipo si es pregunta o respuesta
   Widget _demasDatosRespuestas(BuildContext context, int index) {
-    print(this._respuestasData[index].idAutor);
     String path =
         this._respuestasData[index].idAutor.split('/')[1].split(')')[0];
-    print(path);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
