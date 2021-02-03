@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -18,11 +19,11 @@ class Respuesta {
   String foto;
   File fotoArchivo;
   String id;
-  String idPregunta;
-  String idAutor;
+  DocumentReference idPregunta;
+  DocumentReference idAutor;
   int votos;
 
-  Future<bool> respuestaPost(Respuesta respuesta) async {
+  static Future<bool> respuestaPost(Respuesta respuesta) async {
     //PRIMERO CREAR UNA REFERENCIA AL DOCUMENTO QUE VA A DIRECCIONAR LA IMAGEN
     String imageUrl;
     if (respuesta.fotoArchivo != null) {
@@ -36,15 +37,11 @@ class Respuesta {
 
     try {
       FirebaseFirestore db = FirebaseFirestore.instance;
-      DocumentReference referenciaPregunta =
-          db.doc('/preguntas/' + respuesta.idPregunta);
-      DocumentReference referenciaAutor =
-          db.doc('/usuarios/' + respuesta.idAutor);
       await FirebaseFirestore.instance.collection('respuestas').add({
         'descripcion': respuesta.descripcion,
         'foto': imageUrl,
-        'idPregunta': referenciaPregunta,
-        'idAutor': referenciaAutor,
+        'idPregunta': respuesta.idPregunta,
+        'idAutor': respuesta.idAutor,
         'votos': 0
       });
     } catch (e) {
@@ -54,7 +51,7 @@ class Respuesta {
     return true;
   }
 
-  Future<String> uploadFile(File _image) async {
+  static Future<String> uploadFile(File _image) async {
     String resultado;
     String path = _image.path.split('/').last;
     try {
@@ -69,5 +66,26 @@ class Respuesta {
       print(e);
     }
     return resultado;
+  }
+
+//FALTA ELIMINAR LA FOTO DE LA RESPUESTA EN CASO DE TENERLA
+  static Future<bool> eliminarRespuesta(Respuesta respuesta) async {
+    try {
+      print("El id de la respuesta es: ");
+      print(respuesta.id);
+      print("EL id del usuario es: ");
+      print(FirebaseAuth.instance.currentUser.uid);
+      FirebaseFirestore.instance
+          .collection('respuestas')
+          .doc(respuesta.id)
+          .delete()
+          .then((value) {
+        print("respuesta eliminada desde preguntas");
+      });
+    } catch (e) {
+      print("Ocurrio un error al eliminar respuesta");
+      return false;
+    }
+    return true;
   }
 }

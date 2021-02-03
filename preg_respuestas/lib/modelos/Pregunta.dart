@@ -73,34 +73,10 @@ class Pregunta {
     return resultado;
   }
 
+  //TODO: TENGOQ QUE ELIMINAR EL ARCHIVO DEL STORAGE TAMBIEN
   static Future<bool> eliminarPregunta(
       String idPregunta, DocumentReference idAutor) async {
     try {
-      DocumentReference referencia =
-          FirebaseFirestore.instance.collection('preguntas').doc(idPregunta);
-      QuerySnapshot respuestas = await FirebaseFirestore.instance
-          .collection('respuestas')
-          .where('idPregunta', isEqualTo: referencia)
-          .orderBy('votos', descending: true)
-          .get()
-          .catchError((e) => print(e));
-
-      print("Imprimiendo las respuestas");
-      //for (int i = 0; i < respuestas.docs.length; i++) {
-      //  FirebaseFirestore.instance
-      //      .collection('respuestas')
-      //      .doc(respuestas.docs[i].id)
-      //      .delete();
-      //  print(respuestas.docs[i].id);
-      //}
-      print("El id del usuario es: ");
-      print(FirebaseAuth.instance.currentUser.uid);
-      print("El id del autor: ");
-      print(idAutor);
-      print("El id de la pregunta es: ");
-      print(idPregunta);
-      print("El largo del id de la pregunta es: ");
-      print(idPregunta.length);
       FirebaseFirestore.instance
           .collection('preguntas')
           .doc(idPregunta)

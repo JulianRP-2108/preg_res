@@ -30,6 +30,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
   List<Respuesta> _respuestasData = new List<Respuesta>();
   String autorPregunta;
   String path;
+  bool estaCargando = false;
   ScrollController controladorScroll = new ScrollController();
 
   File _image;
@@ -40,6 +41,15 @@ class _PreguntaPageState extends State<PreguntaPage> {
   @override
   void initState() {
     super.initState();
+    getRespuestas();
+
+    //Obtengo los datos del usuario
+    getUserData().then((value) {
+      setState(() {});
+    });
+  }
+
+  Future<void> getRespuestas() async {
     var referencia = FirebaseFirestore.instance
         .collection('preguntas')
         .doc(widget.pregunta.id);
@@ -53,19 +63,15 @@ class _PreguntaPageState extends State<PreguntaPage> {
       for (int i = 0; i < value.docs.length; i++) {
         this._respuestasData.add(
               Respuesta(
+                  id: value.docs[i].id,
                   descripcion: value.docs[i]['descripcion'],
-                  idAutor: value.docs[i]['idAutor'].toString(),
-                  idPregunta: value.docs[i]['idPregunta'].toString(),
+                  idAutor: value.docs[i]['idAutor'],
+                  idPregunta: value.docs[i]['idPregunta'],
                   foto: value.docs[i]["foto"],
                   votos: value.docs[i]['votos']),
             );
       }
       print("La cantidad de respuestas es: ${this._respuestasData.length}");
-      setState(() {});
-    });
-
-    //Obtengo los datos del usuario
-    getUserData().then((value) {
       setState(() {});
     });
   }
@@ -105,57 +111,71 @@ class _PreguntaPageState extends State<PreguntaPage> {
       ),
       body: ListView(
         controller: this.controladorScroll,
-        children: [
-          _encabezado(context),
-          _detalle(context),
-          _demasDatos(
-            context,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Align(
-              alignment: Alignment.center,
-              child: RaisedButton(
-                color: Color(0xffff8f00),
-                onPressed: () {
-                  Timer(Duration(milliseconds: 500), () {
-                    this.controladorScroll.animateTo(
-                        this.controladorScroll.position.viewportDimension +
-                            this.controladorScroll.position.maxScrollExtent,
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.ease);
-                  });
-                },
-                padding: EdgeInsets.symmetric(horizontal: 30.0),
-                child: Text("Responder"),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0)),
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-            child: Text(
-              "Respuestas: ",
-              style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
-            ),
-          ),
-          _respuestas(context),
-          Container(
-            margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 8.0),
-            child: Text(
-              "Ayuda a tu compañero: ",
-              style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
-            ),
-          ),
-          _formResponder(context)
-        ],
+        children: this.estaCargando
+            ? [
+                Center(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.blue[500],
+                  ),
+                )
+              ]
+            : [
+                _encabezado(context),
+                _detalle(context),
+                _demasDatos(
+                  context,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: RaisedButton(
+                      color: Color(0xffff8f00),
+                      onPressed: () {
+                        Timer(Duration(milliseconds: 200), () {
+                          this.controladorScroll.animateTo(
+                              this
+                                      .controladorScroll
+                                      .position
+                                      .viewportDimension +
+                                  this
+                                      .controladorScroll
+                                      .position
+                                      .maxScrollExtent,
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.ease);
+                        });
+                      },
+                      padding: EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Text("Responder"),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0)),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                  child: Text(
+                    "Respuestas: ",
+                    style: TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                ),
+                _respuestas(context),
+                Container(
+                  margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 8.0),
+                  child: Text(
+                    "Ayuda a tu compañero: ",
+                    style: TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                ),
+                _formResponder(context)
+              ],
       ),
     );
   }
@@ -299,16 +319,22 @@ class _PreguntaPageState extends State<PreguntaPage> {
                             icon: Icon(Icons.highlight_remove_sharp),
                             color: Colors.red[300],
                             onPressed: () async {
+                              setState(() {
+                                this.estaCargando = true;
+                              });
                               bool isEliminada =
                                   await Pregunta.eliminarPregunta(
                                       widget.pregunta.id,
                                       widget.pregunta.idAutor);
                               if (isEliminada) {
-                                print("Pregunta eliminada con exito");
+                                Navigator.of(context).pop();
                               } else {
                                 print(
                                     "Ocurrio un error eliminando la preugnta");
                               }
+                              setState(() {
+                                this.estaCargando = false;
+                              });
                             })
                         : Container(),
                     IconButton(
@@ -342,8 +368,13 @@ class _PreguntaPageState extends State<PreguntaPage> {
 
   //username, idpregunta o id respuesta, tipo si es pregunta o respuesta
   Widget _demasDatosRespuestas(BuildContext context, int index) {
-    String path =
-        this._respuestasData[index].idAutor.split('/')[1].split(')')[0];
+    String path = this
+        ._respuestasData[index]
+        .idAutor
+        .toString()
+        .split('/')[1]
+        .split(')')[0];
+    bool userAutor = false;
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
@@ -360,6 +391,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                     if (!snapshot.hasData) {
                       return Text("");
                     }
+
                     return Text(
                       snapshot.data.get('nombre') +
                           ' ' +
@@ -372,9 +404,27 @@ class _PreguntaPageState extends State<PreguntaPage> {
               Container(
                 child: Row(
                   children: [
-                    Text(
-                      "(${this._respuestasData[index].votos})",
-                    ),
+                    path == FirebaseAuth.instance.currentUser.uid
+                        ? IconButton(
+                            icon: Icon(Icons.highlight_remove_sharp),
+                            color: Colors.red,
+                            onPressed: () async {
+                              setState(() {
+                                this.estaCargando = true;
+                              });
+                              //TODO: implementar accion
+                              bool eliminadaCorrecta =
+                                  await Respuesta.eliminarRespuesta(
+                                      _respuestasData[index]);
+                              this._respuestasData.clear();
+                              this.getRespuestas();
+                              setState(() {
+                                this.estaCargando = false;
+                              });
+                            })
+                        : Text(
+                            "(${this._respuestasData[index].votos})",
+                          ),
                     IconButton(
                         icon: Icon(Icons.volunteer_activism),
                         onPressed: () {
@@ -486,21 +536,31 @@ class _PreguntaPageState extends State<PreguntaPage> {
                   alignment: Alignment.center,
                   child: RaisedButton(
                     color: Color(0xffff8f00),
-                    onPressed: () {
+                    onPressed: () async {
                       //TODO: FALTA VALIDAR EL FORM
+                      setState(() {
+                        this.estaCargando = true;
+                      });
                       final String uid = FirebaseAuth.instance.currentUser.uid;
                       Respuesta respuesta = new Respuesta(
                           descripcion: this.controladorDescripcion.text,
-                          idAutor: uid,
-                          idPregunta: widget.pregunta.id,
+                          idAutor: FirebaseFirestore.instance
+                              .doc('/usuarios/' + uid),
+                          idPregunta: FirebaseFirestore.instance
+                              .doc('/preguntas/' + widget.pregunta.id),
                           fotoArchivo: _image);
                       try {
-                        respuesta.respuestaPost(respuesta);
-                        print("La respuesta se hizo correctamente");
+                        await Respuesta.respuestaPost(respuesta);
+                        this._respuestasData.clear();
+                        this.getRespuestas();
                       } catch (e) {
+                        //TODO: MOSTRAR ALERTA
                         print("Hubo un error");
                         print(e);
                       }
+                      setState(() {
+                        this.estaCargando = false;
+                      });
                     },
                     padding: EdgeInsets.symmetric(horizontal: 30.0),
                     child: Text("Realizar respuesta"),
