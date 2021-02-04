@@ -32,6 +32,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
   String path;
   bool estaCargando = false;
   ScrollController controladorScroll = new ScrollController();
+  final _formKey = GlobalKey<FormState>();
 
   File _image;
   final picker = ImagePicker();
@@ -158,7 +159,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                   child: Text(
                     "Respuestas: ",
                     style: TextStyle(
-                        fontSize: 25.0,
+                        fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black),
                   ),
@@ -169,7 +170,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                   child: Text(
                     "Ayuda a tu compañero: ",
                     style: TextStyle(
-                        fontSize: 25.0,
+                        fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black),
                   ),
@@ -264,8 +265,11 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 : Container(),
           ),
           _demasDatosRespuestas(context, i),
-          Divider(
-            color: Colors.black,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: Divider(
+              color: Colors.black,
+            ),
           ),
         ],
       ));
@@ -416,8 +420,8 @@ class _PreguntaPageState extends State<PreguntaPage> {
                               bool eliminadaCorrecta =
                                   await Respuesta.eliminarRespuesta(
                                       _respuestasData[index]);
-                              this._respuestasData.clear();
-                              this.getRespuestas();
+                              this._limpiarPantalla();
+
                               setState(() {
                                 this.estaCargando = false;
                               });
@@ -462,114 +466,119 @@ class _PreguntaPageState extends State<PreguntaPage> {
         margin: EdgeInsets.fromLTRB(20.0, 0, 20.0, 8.0),
         child: SingleChildScrollView(
             child: Form(
+                key: _formKey,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Text(
-                  "Descripcion",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              TextFormField(
-                maxLines: 8,
-                controller: this.controladorDescripcion,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                  hintText: 'Responde de forma clara y respetuosa',
-                ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Este campo no puede estar vacio';
-                  }
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Text(
-                  "Imagen (Opcional)",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              Container(
-                height: 80,
-                width: 60,
-                decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                child: this._image == null
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.photo_camera_outlined,
-                          color: Color(0xff004e92),
-                        ),
-                        onPressed: () {
-                          _showPicker(context);
-                        },
-                      )
-                    : GestureDetector(
-                        onTap: () => _showPicker(context),
-                        onLongPress: () {
-                          setState(() {
-                            this._image = null;
-                          });
-                        },
-                        child: Image.file(
-                          _image,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.fitHeight,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        child: Text(
+                          "Descripcion",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: RaisedButton(
-                    color: Color(0xffff8f00),
-                    onPressed: () async {
-                      //TODO: FALTA VALIDAR EL FORM
-                      setState(() {
-                        this.estaCargando = true;
-                      });
-                      final String uid = FirebaseAuth.instance.currentUser.uid;
-                      Respuesta respuesta = new Respuesta(
-                          descripcion: this.controladorDescripcion.text,
-                          idAutor: FirebaseFirestore.instance
-                              .doc('/usuarios/' + uid),
-                          idPregunta: FirebaseFirestore.instance
-                              .doc('/preguntas/' + widget.pregunta.id),
-                          fotoArchivo: _image);
-                      try {
-                        await Respuesta.respuestaPost(respuesta);
-                        this._respuestasData.clear();
-                        this.getRespuestas();
-                      } catch (e) {
-                        //TODO: MOSTRAR ALERTA
-                        print("Hubo un error");
-                        print(e);
-                      }
-                      setState(() {
-                        this.estaCargando = false;
-                      });
-                    },
-                    padding: EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Text("Realizar respuesta"),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0)),
-                  ),
-                ),
-              )
-            ]))));
+                      TextFormField(
+                        maxLines: 8,
+                        controller: this.controladorDescripcion,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0))),
+                          hintText: 'Responde de forma clara y respetuosa',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Este campo no puede estar vacio';
+                          }
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        child: Text(
+                          "Imagen (Opcional)",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Container(
+                        height: 80,
+                        width: 60,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                        child: this._image == null
+                            ? IconButton(
+                                icon: Icon(
+                                  Icons.photo_camera_outlined,
+                                  color: Color(0xff004e92),
+                                ),
+                                onPressed: () {
+                                  _showPicker(context);
+                                },
+                              )
+                            : GestureDetector(
+                                onTap: () => _showPicker(context),
+                                onLongPress: () {
+                                  setState(() {
+                                    this._image = null;
+                                  });
+                                },
+                                child: Image.file(
+                                  _image,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: RaisedButton(
+                            color: Color(0xffff8f00),
+                            onPressed: () async {
+                              if (this._formKey.currentState.validate()) {
+                                setState(() {
+                                  this.estaCargando = true;
+                                });
+                                final String uid =
+                                    FirebaseAuth.instance.currentUser.uid;
+                                Respuesta respuesta = new Respuesta(
+                                    descripcion:
+                                        this.controladorDescripcion.text,
+                                    idAutor: FirebaseFirestore.instance
+                                        .doc('/usuarios/' + uid),
+                                    idPregunta: FirebaseFirestore.instance.doc(
+                                        '/preguntas/' + widget.pregunta.id),
+                                    fotoArchivo: _image);
+                                try {
+                                  await Respuesta.respuestaPost(respuesta);
+                                  this._limpiarPantalla();
+                                } catch (e) {
+                                  //TODO: MOSTRAR ALERTA
+                                  print("Hubo un error");
+                                  print(e);
+                                }
+                                setState(() {
+                                  this.estaCargando = false;
+                                });
+                              }
+                            },
+                            padding: EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Text("Realizar respuesta"),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0)),
+                          ),
+                        ),
+                      )
+                    ]))));
   }
 
   _imgFromCamera() async {
@@ -626,5 +635,21 @@ class _PreguntaPageState extends State<PreguntaPage> {
             ),
           );
         });
+  }
+
+  //Al limpiar las pantallas tengo que volver a cargar
+  //las respuestas, limpiar el formulario y scrollear hacia el minimo
+  void _limpiarPantalla() {
+    this._respuestasData.clear();
+    this.getRespuestas();
+
+    this.controladorDescripcion.text = "";
+    this._image = null;
+
+    this.controladorScroll.animateTo(
+        this.controladorScroll.position.minScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.ease);
+    setState(() {});
   }
 }

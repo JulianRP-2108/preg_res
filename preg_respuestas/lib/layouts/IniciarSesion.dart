@@ -113,7 +113,7 @@ class _IniciarSesionState extends State<IniciarSesion> {
                   cambiarFocoCampo(context, _usuario, _password);
                 },
                 decoration: InputDecoration(
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Colors.grey),
                   hintText: 'Ej: usuario@email.com',
                 ),
                 validator: (value) {
@@ -123,7 +123,7 @@ class _IniciarSesionState extends State<IniciarSesion> {
                 },
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
+                padding: const EdgeInsets.only(top: 40.0),
                 child: Text(
                   "Contraseña",
                   style: TextStyle(color: Colors.white, fontSize: 18.0),
@@ -138,7 +138,7 @@ class _IniciarSesionState extends State<IniciarSesion> {
                 },
                 decoration: InputDecoration(
                     hintText: 'Password',
-                    hintStyle: TextStyle(color: Colors.white)),
+                    hintStyle: TextStyle(color: Colors.grey)),
                 obscureText: true,
                 validator: (value) {
                   if (value.isEmpty) {
@@ -149,16 +149,16 @@ class _IniciarSesionState extends State<IniciarSesion> {
               Padding(
                 padding: EdgeInsets.only(top: 15.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "¿Olvidaste la contraseña?",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    //Text(
+                    //  "¿Olvidaste la contraseña?",
+                    //  style: TextStyle(color: Colors.white),
+                    //),
                     FlatButton(
                         onPressed: () {},
                         child: Text(
-                          "Recuperar",
+                          "¿Olvidaste la contraseña?",
                           style: TextStyle(color: Colors.white),
                         ))
                   ],
@@ -173,7 +173,6 @@ class _IniciarSesionState extends State<IniciarSesion> {
                     padding: EdgeInsets.symmetric(horizontal: 50.0),
                     onPressed: () async {
                       if (_formKey.currentState.validate()) {
-                        print("Apretaste el boton");
                         setState(() {
                           this.isLoading = true;
                         });
@@ -217,20 +216,20 @@ class _IniciarSesionState extends State<IniciarSesion> {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(top: 15.0),
+            padding: EdgeInsets.only(top: 40.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "¿No tienes cuenta?",
-                  style: TextStyle(color: Colors.white),
-                ),
+                //Text(
+                //  "¿No tienes cuenta?",
+                //  style: TextStyle(color: Colors.white),
+                //),
                 FlatButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed("/registro");
                     },
                     child: Text(
-                      "Registrate",
+                      "¿No tienes cuenta?",
                       style: TextStyle(color: Colors.white),
                     ))
               ],

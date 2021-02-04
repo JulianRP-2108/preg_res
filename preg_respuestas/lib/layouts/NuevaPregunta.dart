@@ -151,7 +151,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                 "Titulo",
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: 25.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold),
               ),
             ),
@@ -176,7 +176,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                 "Descripcion",
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: 18.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold),
               ),
             ),
@@ -204,7 +204,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                 "Palabras clave",
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: 18.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold),
               ),
             ),
@@ -222,8 +222,6 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                   this
                       ._palabrasClaveList
                       .removeWhere((element) => element.length <= 3);
-                  print("la lista completa es: ");
-                  print(this._palabrasClaveList);
                 }
                 setState(() {});
               },
@@ -249,13 +247,13 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                 "Imagen (Opcional)",
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: 18.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold),
               ),
             ),
             Container(
-              height: 80,
-              width: 60,
+              height: 100,
+              width: 70,
               decoration: BoxDecoration(
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.all(Radius.circular(10.0))),
@@ -278,8 +276,6 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                       },
                       child: Image.file(
                         _image,
-                        width: 100,
-                        height: 100,
                         fit: BoxFit.fitHeight,
                       ),
                     ),
@@ -307,6 +303,9 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                         id: "",
                       );
                       bool isUp = await Pregunta.postPregunta(preg);
+                      if (isUp) {
+                        Navigator.of(context).pop();
+                      }
                       setState(() {
                         this.isloading = false;
                       });
@@ -322,7 +321,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                       }
                     }
                   },
-                  padding: EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0),
                   child: Text("Realizar pregunta"),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0)),

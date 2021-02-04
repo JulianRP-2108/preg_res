@@ -26,7 +26,7 @@ class PerfilPage extends StatefulWidget {
 
 class _PerfilPageState extends State<PerfilPage> {
   TextStyle subtitulo = TextStyle(
-      color: Colors.black, fontSize: 20.0, fontWeight: FontWeight.bold);
+      color: Colors.black, fontSize: 15.0, fontWeight: FontWeight.bold);
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +54,7 @@ class _PerfilPageState extends State<PerfilPage> {
             Padding(
               padding: EdgeInsets.fromLTRB(30.0, 70.0, 30.0, 10.0),
               child: RaisedButton(
+                padding: EdgeInsets.symmetric(vertical: 12.0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(30.0))),
                 child: Text(
@@ -122,7 +123,7 @@ class _PerfilPageState extends State<PerfilPage> {
               "Resumen:",
               style: TextStyle(
                   color: Colors.black,
-                  fontSize: 25.0,
+                  fontSize: 20.0,
                   fontWeight: FontWeight.bold),
             ),
           ),

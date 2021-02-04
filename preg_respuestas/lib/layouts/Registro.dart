@@ -94,10 +94,10 @@ class _RegistroState extends State<Registro> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Nombre",
-              style: TextStyle(color: Colors.white, fontSize: 18.0),
-            ),
+            //Text(
+            //  "Nombre",
+            //  style: TextStyle(color: Colors.white, fontSize: 18.0),
+            //),
             TextFormField(
               style: TextStyle(color: Colors.white),
               focusNode: _nombre,
@@ -106,7 +106,7 @@ class _RegistroState extends State<Registro> {
                 cambiarFocoCampo(context, _nombre, _apellido);
               },
               decoration: InputDecoration(
-                hintStyle: TextStyle(color: Colors.white),
+                hintStyle: TextStyle(color: Colors.grey),
                 hintText: 'Nombre',
               ),
               validator: (value) {
@@ -118,10 +118,10 @@ class _RegistroState extends State<Registro> {
             SizedBox(
               height: 20.0,
             ),
-            Text(
-              "Apellido",
-              style: TextStyle(color: Colors.white, fontSize: 18.0),
-            ),
+            //Text(
+            //  "Apellido",
+            //  style: TextStyle(color: Colors.white, fontSize: 18.0),
+            //),
             TextFormField(
               style: TextStyle(color: Colors.white),
               focusNode: _apellido,
@@ -142,10 +142,10 @@ class _RegistroState extends State<Registro> {
             SizedBox(
               height: 20.0,
             ),
-            Text(
-              "Email",
-              style: TextStyle(color: Colors.white, fontSize: 18.0),
-            ),
+            //Text(
+            //  "Email",
+            //  style: TextStyle(color: Colors.white, fontSize: 18.0),
+            //),
             TextFormField(
               style: TextStyle(color: Colors.white),
               focusNode: _email,
@@ -155,7 +155,7 @@ class _RegistroState extends State<Registro> {
               },
               decoration: InputDecoration(
                 hintStyle: TextStyle(color: Colors.white),
-                hintText: 'Ej: tuEmail@mail.com',
+                hintText: 'Email: tuEmail@mail.com',
               ),
               validator: (value) {
                 if (value.isEmpty) {
@@ -166,10 +166,10 @@ class _RegistroState extends State<Registro> {
             SizedBox(
               height: 20.0,
             ),
-            Text(
-              "Contraseña",
-              style: TextStyle(color: Colors.white, fontSize: 18.0),
-            ),
+            //Text(
+            //  "Contraseña",
+            //  style: TextStyle(color: Colors.white, fontSize: 18.0),
+            //),
             TextFormField(
               style: TextStyle(color: Colors.white),
               focusNode: _password,
@@ -180,7 +180,7 @@ class _RegistroState extends State<Registro> {
               },
               decoration: InputDecoration(
                 hintStyle: TextStyle(color: Colors.white),
-                hintText: 'Ej: 1234 o mejor',
+                hintText: 'Contraseña (6 o más caracteres)',
               ),
               validator: (value) {
                 if (value.isEmpty) {
@@ -191,10 +191,10 @@ class _RegistroState extends State<Registro> {
             SizedBox(
               height: 20.0,
             ),
-            Text(
-              "Repetir contraseña",
-              style: TextStyle(color: Colors.white, fontSize: 18.0),
-            ),
+            //Text(
+            //  "Repetir contraseña",
+            //  style: TextStyle(color: Colors.white, fontSize: 18.0),
+            //),
             TextFormField(
               style: TextStyle(color: Colors.white),
               focusNode: _password2,
@@ -203,7 +203,7 @@ class _RegistroState extends State<Registro> {
               onFieldSubmitted: (term) {},
               decoration: InputDecoration(
                 hintStyle: TextStyle(color: Colors.white),
-                hintText: 'Ej: 1234 o mejor',
+                hintText: 'Repetir contraseña',
               ),
               validator: (value) {
                 if (value.isEmpty) {
