@@ -81,6 +81,7 @@ class _PerfilPageState extends State<PerfilPage> {
             padding: const EdgeInsets.only(right: 8.0),
             child: GestureDetector(
               onTap: () {
+                //TODO: HACER CON UN TOAST COMO EN LA PREGUNTA
                 showDialog(
                     barrierDismissible: true,
                     context: context,
@@ -91,14 +92,16 @@ class _PerfilPageState extends State<PerfilPage> {
               child: CircleAvatar(
                 radius: 35.0,
                 //backgroundImage: NetworkImage(widget.usuario.profileImage),
-                backgroundImage: NetworkImage(""),
+                backgroundImage: Usuario.getProfileImage() != ""
+                    ? NetworkImage(Usuario.getProfileImage())
+                    : NetworkImage(
+                        ""), //TODO: SE PUEDE PONER UN ASSET QUE SEA LA IMAGEN DE PERFIL
               ),
             ),
           ),
           Expanded(
               child: Text(
-            "Julian Rodriguez Petz",
-            //widget.usuario.nombre + " " + widget.usuario.apellido,
+            Usuario.getNombre() + " " + Usuario.getApellido(),
             style: this.subtitulo,
           )),
         ],
@@ -112,8 +115,7 @@ class _PerfilPageState extends State<PerfilPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("rodriguezpetzjulian@gmail.com"),
-          //Text(widget.usuario.email),
+          Text(Usuario.getEmail()),
           Padding(
             padding: EdgeInsets.only(top: 40.0, bottom: 20.0),
             child: Text(
@@ -132,7 +134,9 @@ class _PerfilPageState extends State<PerfilPage> {
                 "Puntaje: ",
                 style: this.subtitulo,
               ),
-              Text("250 Ptos")
+              Text(Usuario.getPuntaje() == null
+                  ? ""
+                  : Usuario.getPuntaje().toString() + " Ptos")
             ],
           ),
           SizedBox(height: 10.0),
@@ -144,7 +148,9 @@ class _PerfilPageState extends State<PerfilPage> {
                 "Posicion Anual: ",
                 style: this.subtitulo,
               ),
-              Text("350º Lugar")
+              Text(Usuario.getPosAnual() == null || Usuario.getPosAnual() == 0
+                  ? "No calificado"
+                  : Usuario.getPosAnual().toString() + "º Lugar")
             ],
           ),
           SizedBox(height: 10.0),
@@ -156,7 +162,10 @@ class _PerfilPageState extends State<PerfilPage> {
                 "Posicion Mensual: ",
                 style: this.subtitulo,
               ),
-              Text("12º Lugar")
+              Text(Usuario.getPosMensual() == null ||
+                      Usuario.getPosMensual() == 0
+                  ? "No calificado"
+                  : Usuario.getPosMensual().toString() + "º Lugar")
             ],
           ),
           SizedBox(height: 10.0),
@@ -169,7 +178,9 @@ class _PerfilPageState extends State<PerfilPage> {
                 style: this.subtitulo,
               ),
               Text(
-                "200",
+                Usuario.getPreguntas() == null
+                    ? "0"
+                    : Usuario.getPreguntas().toString(),
                 overflow: TextOverflow.fade,
               )
             ],
@@ -183,7 +194,9 @@ class _PerfilPageState extends State<PerfilPage> {
                 "Respuestas: ",
                 style: this.subtitulo,
               ),
-              Text("25")
+              Text(Usuario.getRespuestas() == null
+                  ? "0"
+                  : Usuario.getRespuestas().toString())
             ],
           ),
         ],
