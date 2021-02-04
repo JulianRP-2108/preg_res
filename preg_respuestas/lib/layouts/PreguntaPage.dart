@@ -31,6 +31,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
   String autorPregunta;
   String path;
   bool estaCargando = false;
+  bool isPreguntaLike = false;
   ScrollController controladorScroll = new ScrollController();
   final _formKey = GlobalKey<FormState>();
 
@@ -342,9 +343,22 @@ class _PreguntaPageState extends State<PreguntaPage> {
                             })
                         : Container(),
                     IconButton(
-                        icon: Icon(Icons.volunteer_activism),
+                        icon: Icon(
+                          Icons.volunteer_activism,
+                          color: this.isPreguntaLike
+                              ? Colors.lightBlue
+                              : Colors.black,
+                        ),
                         onPressed: () {
-                          print("pregunta votada");
+                          setState(() {
+                            if (this.isPreguntaLike == true) {
+                              this.isPreguntaLike = false;
+                              print("Voto quitado");
+                            } else {
+                              this.isPreguntaLike = true;
+                              print("Voto puesto");
+                            }
+                          });
                         }),
                     IconButton(
                         icon: Icon(Icons.report_gmailerrorred_rounded),
@@ -430,9 +444,11 @@ class _PreguntaPageState extends State<PreguntaPage> {
                             "(${this._respuestasData[index].votos})",
                           ),
                     IconButton(
-                        icon: Icon(Icons.volunteer_activism),
+                        icon:
+                            Icon(Icons.volunteer_activism, color: Colors.black),
                         onPressed: () {
-                          print("pregunta votada");
+                          //Puedo guardar un array con las posiciones que se votaron
+                          print("Respuesta votada");
                         }),
                     IconButton(
                         icon: Icon(Icons.report_gmailerrorred_rounded),
