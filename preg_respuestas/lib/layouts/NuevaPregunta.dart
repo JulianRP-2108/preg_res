@@ -22,6 +22,8 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
   final picker = ImagePicker();
 
   List<String> _palabrasClaveList = new List<String>();
+  List<String> _palabrasClaveTitulo = new List<String>();
+  List<String> _clavesResultado = new List<String>();
 
   final _tituloController = TextEditingController();
   final _clavesController = TextEditingController();
@@ -89,18 +91,18 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
             height: 50.0,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: this._palabrasClaveList.length == 0
+                itemCount: this._clavesResultado.length == 0
                     ? 1
-                    : this._palabrasClaveList.length,
+                    : this._clavesResultado.length,
                 itemBuilder: (BuildContext context, int index) {
-                  if (this._palabrasClaveList.length == 0) {
+                  if (this._clavesResultado.length == 0) {
                     return Container();
                   }
                   return Padding(
                     padding: const EdgeInsets.only(right: 5.0),
                     child: Chip(
                       label: Text(
-                        this._palabrasClaveList[index],
+                        this._clavesResultado[index],
                         style: TextStyle(color: Colors.black),
                       ),
                       backgroundColor: Colors.grey[200],
@@ -159,7 +161,16 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
               focusNode: _titulo,
               controller: _tituloController,
               onFieldSubmitted: (term) {
+                var aux = term.split(' ').toSet();
+                this._palabrasClaveTitulo = aux
+                    .intersection(this._palabrasClaveTitulo.toSet())
+                    .toList();
+                print("El resultado final es: ");
+                print(this._palabrasClaveTitulo);
                 cambiarFocoCampo(context, _titulo, _descripcion);
+                this._clavesResultado.addAll(this._palabrasClaveTitulo);
+                this._clavesResultado = this._clavesResultado.toSet().toList();
+                setState(() {});
               },
               decoration: InputDecoration(
                 hintText: 'Ej: ¿Cual es el area de un circulo?',
@@ -168,6 +179,20 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                 if (value.isEmpty) {
                   return 'Este campo no puede estar vacio';
                 }
+              },
+              onChanged: (frase) {
+                if (frase.isEmpty) {
+                  this._palabrasClaveTitulo.clear();
+                }
+
+                frase.split(' ').forEach((element) {
+                  if (!this._palabrasClaveTitulo.contains(element)) {
+                    this._palabrasClaveTitulo.add(element);
+                  }
+                });
+                this
+                    ._palabrasClaveTitulo
+                    .removeWhere((element) => element.length <= 3);
               },
             ),
             Padding(
@@ -214,19 +239,27 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
               controller: _clavesController,
               onChanged: (frase) {
                 if (frase.isEmpty) {
-                  print("Entre al vacio");
                   this._palabrasClaveList.clear();
                 }
-                if (frase.endsWith(' ')) {
-                  this._palabrasClaveList = frase.split(' ');
-                  this
-                      ._palabrasClaveList
-                      .removeWhere((element) => element.length <= 3);
-                }
-                setState(() {});
+
+                frase.split(' ').forEach((element) {
+                  if (!this._palabrasClaveList.contains(element)) {
+                    this._palabrasClaveList.add(element);
+                  }
+                });
+                this
+                    ._palabrasClaveList
+                    .removeWhere((element) => element.length <= 3);
               },
               onFieldSubmitted: (term) {
-                //TODO: QUE HACER ACA? ESCONDER EL TECLADO PARA QUE SE VEA EL BOTON DE LAS FOTOS?
+                var aux = term.split(' ').toSet();
+                this._palabrasClaveList =
+                    aux.intersection(this._palabrasClaveList.toSet()).toList();
+                this._clavesResultado.addAll(this._palabrasClaveList);
+                this._clavesResultado = this._clavesResultado.toSet().toList();
+                print("El resultado final es: ");
+                print(this._palabrasClaveList);
+                setState(() {});
               },
               maxLines: 1,
               decoration: InputDecoration(
