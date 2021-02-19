@@ -24,6 +24,14 @@ class Usuario {
   int preguntas;
   @protected
   int respuestas;
+  @protected
+  List<DocumentReference> preguntasVotadas;
+  @protected
+  List<DocumentReference> respuestasVotadas;
+  @protected
+  List<DocumentReference> preguntasReportadas;
+  @protected
+  List<DocumentReference> respuestasReportadas;
 
   static final Usuario _user = Usuario._internal();
 
@@ -43,6 +51,14 @@ class Usuario {
   static void setPosMensual(int posMensual) => _user.posMensual = posMensual;
   static void setRespuestas(int respuestas) => _user.respuestas = respuestas;
   static void setPreguntas(int preguntas) => _user.preguntas = preguntas;
+  static void setPreguntasVotadas(List<DocumentReference> votadas) =>
+      _user.preguntasVotadas = votadas;
+  static void setPreguntasReportadas(List<DocumentReference> reportadas) =>
+      _user.preguntasReportadas = reportadas;
+  static void setRespuestasVotadas(List<DocumentReference> votadas) =>
+      _user.respuestasVotadas = votadas;
+  static void setRespuestasReportadas(List<DocumentReference> reportadas) =>
+      _user.respuestasReportadas = reportadas;
 
   static String getNombre() => _user.nombre;
   static String getApellido() => _user.apellido;
@@ -54,6 +70,14 @@ class Usuario {
   static int getPosMensual() => _user.posMensual;
   static int getRespuestas() => _user.respuestas;
   static int getPreguntas() => _user.preguntas;
+  static List<DocumentReference> getPreguntasVotadas() =>
+      _user.preguntasVotadas;
+  static List<DocumentReference> getPreguntasReportadas() =>
+      _user.preguntasReportadas;
+  static List<DocumentReference> getRespuestasVotadas() =>
+      _user.respuestasVotadas;
+  static List<DocumentReference> getRespuestasReportadas() =>
+      _user.respuestasReportadas;
 
   //  ACA cargo los datos al singleton
   static void fromDocument(DocumentSnapshot doc) {
@@ -69,6 +93,10 @@ class Usuario {
       Usuario.setPuntaje(doc.get('puntaje'));
       Usuario.setPreguntas(doc.get('preguntas'));
       Usuario.setRespuestas(doc.get('respuestas'));
+      Usuario.setPreguntasVotadas(doc.get('preguntasVotadas'));
+      Usuario.setPreguntasReportadas(doc.get('preguntasReportadas'));
+      Usuario.setRespuestasVotadas(doc.get('respuestasVotadas'));
+      Usuario.setRespuestasReportadas(doc.get('respuestasReportadas'));
     } catch (e) {
       print(e);
     }
@@ -91,7 +119,11 @@ class Usuario {
         'posMensual': Usuario.getPosMensual(),
         'puntaje': Usuario.getPuntaje(),
         'preguntas': Usuario.getPreguntas(),
-        'respuestas': Usuario.getRespuestas()
+        'respuestas': Usuario.getRespuestas(),
+        'preguntasVotadas': Usuario.getPreguntasVotadas(),
+        'preguntasReportadas': Usuario.getPreguntasReportadas(),
+        'respuestasVotadas': Usuario.getRespuestasVotadas(),
+        'respuestasReportadas': Usuario.getRespuestasReportadas()
       });
     } catch (e) {
       return false;
