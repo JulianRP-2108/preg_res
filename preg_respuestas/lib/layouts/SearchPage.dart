@@ -111,7 +111,8 @@ class _SearchPageState extends State<SearchPage> {
         id: porTitulo.docs[i].id,
         idAutor: porTitulo.docs[i].get('idAutor'),
         foto: porTitulo.docs[i].get('foto'),
-        votos: porTitulo.docs[i].get('votos'),
+        cantVotos: porTitulo.docs[i].get('cantVotos'),
+        cantReportes: porTitulo.docs[i].get('cantReportes'),
         palabrasClave: porTitulo.docs[i].get('palabrasClave'),
       ));
     }
@@ -132,7 +133,8 @@ class _SearchPageState extends State<SearchPage> {
           id: porPalabrasClave.docs[i].id,
           idAutor: porPalabrasClave.docs[i].get('idAutor'),
           foto: porPalabrasClave.docs[i].get('foto'),
-          votos: porPalabrasClave.docs[i].get('votos'),
+          cantVotos: porPalabrasClave.docs[i].get('cantVotos'),
+          cantReportes: porPalabrasClave.docs[i].get('cantReportes'),
           palabrasClave: porPalabrasClave.docs[i].get('palabrasClave'),
         ));
       }

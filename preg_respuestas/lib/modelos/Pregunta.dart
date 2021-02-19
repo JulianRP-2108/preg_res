@@ -12,7 +12,8 @@ class Pregunta {
       this.palabrasClave,
       this.foto,
       this.id,
-      this.votos,
+      this.cantVotos,
+      this.cantReportes,
       this.idAutor,
       this.fotoArchivo});
 
@@ -23,7 +24,8 @@ class Pregunta {
   String descripcion;
   String id;
   DocumentReference idAutor;
-  int votos;
+  int cantVotos;
+  int cantReportes;
 
   static Future<bool> postPregunta(Pregunta preg) async {
     //PRIMERO CREAR UNA REFERENCIA AL DOCUMENTO QUE VA A DIRECCIONAR LA IMAGEN
@@ -46,7 +48,8 @@ class Pregunta {
         'palabrasClave': preg.palabrasClave,
         'descripcion': preg.descripcion,
         'idAutor': preg.idAutor,
-        'votos': 0
+        'cantVotos': 0,
+        'cantReportes': 0
       });
     } catch (e) {
       print(e);

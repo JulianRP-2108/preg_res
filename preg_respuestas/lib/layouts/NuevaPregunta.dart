@@ -330,7 +330,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                         palabrasClave: this._palabrasClaveList,
                         idAutor: FirebaseFirestore.instance.doc('/usuarios/' +
                             FirebaseAuth.instance.currentUser.uid),
-                        votos: 0,
+                        cantVotos: 0,
                         foto: "",
                         fotoArchivo: this._image,
                         id: "",

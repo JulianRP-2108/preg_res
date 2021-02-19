@@ -25,6 +25,10 @@ class AuthHelper {
     Usuario.setPuntaje(0);
     Usuario.setPreguntas(0);
     Usuario.setRespuestas(0);
+    Usuario.setPreguntasVotadas([]);
+    Usuario.setPreguntasReportadas([]);
+    Usuario.setRespuestasVotadas([]);
+    Usuario.setRespuestasReportadas([]);
 
     final UserCredential resp = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(
