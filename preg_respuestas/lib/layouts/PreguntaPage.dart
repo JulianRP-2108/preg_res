@@ -195,11 +195,6 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black),
           ),
-          Container(
-              height: 50.0,
-              child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: _getPalabrasClaves()))
         ],
       ),
     );
@@ -281,25 +276,6 @@ class _PreguntaPageState extends State<PreguntaPage> {
     );
   }
 
-  List<Widget> _getPalabrasClaves() {
-    List<Widget> chips = new List<Widget>();
-    if (widget.pregunta.palabrasClave != null) {
-      for (var clave in widget.pregunta.palabrasClave) {
-        chips.add(Padding(
-          padding: EdgeInsets.symmetric(horizontal: 3.0),
-          child: Chip(
-            label: Text(
-              clave,
-              style: TextStyle(fontSize: 11.0),
-            ),
-            backgroundColor: Colors.grey[300],
-          ),
-        ));
-      }
-    }
-    return chips;
-  }
-
   Widget _demasDatos(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
@@ -317,7 +293,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 child: Row(
                   children: [
                     Text(
-                      "(" + widget.pregunta.votos.toString() + ")",
+                      "(" + widget.pregunta.cantVotos.toString() + ")",
                     ),
                     this.path == FirebaseAuth.instance.currentUser.uid
                         ? IconButton(

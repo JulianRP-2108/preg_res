@@ -24,6 +24,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
   List<String> _palabrasClaveList = new List<String>();
   List<String> _palabrasClaveTitulo = new List<String>();
   List<String> _clavesResultado = new List<String>();
+  List<String> _clavesMostrar = new List<String>();
 
   final _tituloController = TextEditingController();
   final _clavesController = TextEditingController();
@@ -91,18 +92,18 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
             height: 50.0,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: this._clavesResultado.length == 0
+                itemCount: this._clavesMostrar.length == 0
                     ? 1
-                    : this._clavesResultado.length,
+                    : this._clavesMostrar.length,
                 itemBuilder: (BuildContext context, int index) {
-                  if (this._clavesResultado.length == 0) {
+                  if (this._clavesMostrar.length == 0) {
                     return Container();
                   }
                   return Padding(
                     padding: const EdgeInsets.only(right: 5.0),
                     child: Chip(
                       label: Text(
-                        this._clavesResultado[index],
+                        this._clavesMostrar[index],
                         style: TextStyle(color: Colors.black),
                       ),
                       backgroundColor: Colors.grey[200],
@@ -162,11 +163,12 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
               controller: _tituloController,
               onFieldSubmitted: (term) {
                 var aux = term.split(' ').toSet();
-                this._palabrasClaveTitulo = aux
+                //Esto hace que me quede con las palabras completas
+                this._clavesMostrar.addAll(aux
                     .intersection(this._palabrasClaveTitulo.toSet())
-                    .toList();
-                print("El resultado final es: ");
-                print(this._palabrasClaveTitulo);
+                    .toList());
+                print("El resultado a mostrar es: ");
+                print(this._clavesMostrar);
                 cambiarFocoCampo(context, _titulo, _descripcion);
                 this._clavesResultado.addAll(this._palabrasClaveTitulo);
                 this._clavesResultado = this._clavesResultado.toSet().toList();
@@ -234,7 +236,6 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
               ),
             ),
             TextFormField(
-              //TODO: AL TOCAR EL ESPACIO QUE SE HAGAN CHIPS SI ES QUE SE PUEDEN, SINO PONERLOS ABAJO
               focusNode: _palabrasClave,
               controller: _clavesController,
               onChanged: (frase) {
@@ -253,8 +254,8 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
               },
               onFieldSubmitted: (term) {
                 var aux = term.split(' ').toSet();
-                this._palabrasClaveList =
-                    aux.intersection(this._palabrasClaveList.toSet()).toList();
+                this._clavesMostrar.addAll(
+                    aux.intersection(this._palabrasClaveList.toSet()).toList());
                 this._clavesResultado.addAll(this._palabrasClaveList);
                 this._clavesResultado = this._clavesResultado.toSet().toList();
                 print("El resultado final es: ");
@@ -327,7 +328,7 @@ class _NuevaPreguntaState extends State<NuevaPregunta> {
                       Pregunta preg = new Pregunta(
                         titulo: this._tituloController.text,
                         descripcion: this._descripcionController.text,
-                        palabrasClave: this._palabrasClaveList,
+                        palabrasClave: this._clavesResultado,
                         idAutor: FirebaseFirestore.instance.doc('/usuarios/' +
                             FirebaseAuth.instance.currentUser.uid),
                         cantVotos: 0,

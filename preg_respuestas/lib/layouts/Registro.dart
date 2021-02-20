@@ -106,7 +106,7 @@ class _RegistroState extends State<Registro> {
                 cambiarFocoCampo(context, _nombre, _apellido);
               },
               decoration: InputDecoration(
-                hintStyle: TextStyle(color: Colors.grey),
+                hintStyle: TextStyle(color: Colors.white),
                 hintText: 'Nombre',
               ),
               validator: (value) {

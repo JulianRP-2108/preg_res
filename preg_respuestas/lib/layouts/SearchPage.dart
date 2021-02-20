@@ -88,56 +88,27 @@ class _SearchPageState extends State<SearchPage> {
     List<String> palabras = query.split(" ");
 
     List<Pregunta> preguntas = new List<Pregunta>();
-    var porTitulo = await FirebaseFirestore.instance //aca busco por el texto
-        .collection('preguntas')
-        .where('titulo', isGreaterThanOrEqualTo: query)
-        .limit(100)
-        .get();
-
     QuerySnapshot porPalabrasClave;
     for (var i = 0; i < palabras.length; i++) {
       porPalabrasClave = await FirebaseFirestore.instance
           .collection('preguntas')
-          .where('palabrasClave', whereIn: palabras)
+          .where('palabrasClave', arrayContainsAny: palabras)
           .limit(100)
           .get();
     }
 
     //El tema es fijarseq ue no se repitan
-    for (int i = 0; i < porTitulo.docs.length; i++) {
-      preguntas.add(new Pregunta(
-        titulo: porTitulo.docs[i].get('titulo'),
-        descripcion: porTitulo.docs[i].get('descripcion'),
-        id: porTitulo.docs[i].id,
-        idAutor: porTitulo.docs[i].get('idAutor'),
-        foto: porTitulo.docs[i].get('foto'),
-        cantVotos: porTitulo.docs[i].get('cantVotos'),
-        cantReportes: porTitulo.docs[i].get('cantReportes'),
-        palabrasClave: porTitulo.docs[i].get('palabrasClave'),
-      ));
-    }
-
-    //ESTO SE ASEGURA QUE AGREGAR VALORES DISTINTOS
     for (int i = 0; i < porPalabrasClave.docs.length; i++) {
-      bool repetido = false;
-      for (int j = 0; j < preguntas.length; j++) {
-        if (preguntas[j].id == porPalabrasClave.docs[i].id) {
-          repetido = true;
-          break;
-        }
-      }
-      if (!repetido) {
-        preguntas.add(Pregunta(
-          titulo: porPalabrasClave.docs[i].get('titulo'),
-          descripcion: porPalabrasClave.docs[i].get('descripcion'),
-          id: porPalabrasClave.docs[i].id,
-          idAutor: porPalabrasClave.docs[i].get('idAutor'),
-          foto: porPalabrasClave.docs[i].get('foto'),
-          cantVotos: porPalabrasClave.docs[i].get('cantVotos'),
-          cantReportes: porPalabrasClave.docs[i].get('cantReportes'),
-          palabrasClave: porPalabrasClave.docs[i].get('palabrasClave'),
-        ));
-      }
+      preguntas.add(new Pregunta(
+        titulo: porPalabrasClave.docs[i].get('titulo'),
+        descripcion: porPalabrasClave.docs[i].get('descripcion'),
+        id: porPalabrasClave.docs[i].id,
+        idAutor: porPalabrasClave.docs[i].get('idAutor'),
+        foto: porPalabrasClave.docs[i].get('foto'),
+        cantVotos: porPalabrasClave.docs[i].get('cantVotos'),
+        cantReportes: porPalabrasClave.docs[i].get('cantReportes'),
+        palabrasClave: porPalabrasClave.docs[i].get('palabrasClave'),
+      ));
     }
     return preguntas;
   }
