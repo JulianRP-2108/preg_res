@@ -93,4 +93,56 @@ class Pregunta {
     }
     return true;
   }
+
+  //tengo que aumentar en 1 los votos a la pregunta
+  //tengo que agregar la referencia de la pregunta al arreglo del usuario logueado
+  static Future<bool> votarPregunta(Pregunta pregunta) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('preguntas')
+          .doc(pregunta.id)
+          .update({'cantVotos': pregunta.cantVotos + 1});
+      //.set({'cantVotos': pregunta.cantVotos + 1});
+      DocumentReference referenciaPregunta =
+          FirebaseFirestore.instance.doc('/preguntas/' + pregunta.id);
+      await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(FirebaseAuth.instance.currentUser.uid)
+          .update({
+        'preguntasVotadas': FieldValue.arrayUnion([referenciaPregunta])
+      });
+    } catch (e) {
+      print("Error al likear pregunta");
+      print(e);
+      return false;
+    }
+    return true;
+  }
+
+  //tengo que disminuir en 1 si es mayor a 0 los votos a la pregunta
+  //tengo que quitar la referencia de la pregunta al arreglo del usuario logueado
+  static Future<bool> removeVotePregunta(Pregunta pregunta) async {
+    try {
+      if (pregunta.cantVotos > 0) {
+        await FirebaseFirestore.instance
+            .collection('preguntas')
+            .doc(pregunta.id)
+            .update({'cantVotos': pregunta.cantVotos - 1});
+      }
+      DocumentReference referenciaPregunta =
+          FirebaseFirestore.instance.doc('/preguntas/' + pregunta.id);
+      await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(FirebaseAuth.instance.currentUser.uid)
+          .update({
+        'preguntasVotadas': FieldValue.arrayRemove([referenciaPregunta])
+      });
+    } catch (e) {
+      print("Error al quitar voto pregunta");
+      print(e);
+      return false;
+    }
+    print("Voto quitado correctamente");
+    return true;
+  }
 }

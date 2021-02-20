@@ -32,6 +32,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
   String path;
   bool estaCargando = false;
   bool isPreguntaLike = false;
+  int cantVotos;
   ScrollController controladorScroll = new ScrollController();
   final _formKey = GlobalKey<FormState>();
 
@@ -43,6 +44,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
   @override
   void initState() {
     super.initState();
+    this.cantVotos = widget.pregunta.cantVotos;
     getRespuestas();
 
     //Obtengo los datos del usuario
@@ -293,7 +295,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 child: Row(
                   children: [
                     Text(
-                      "(" + widget.pregunta.cantVotos.toString() + ")",
+                      "(" + this.cantVotos.toString() + ")",
                     ),
                     this.path == FirebaseAuth.instance.currentUser.uid
                         ? IconButton(
@@ -330,9 +332,13 @@ class _PreguntaPageState extends State<PreguntaPage> {
                             if (this.isPreguntaLike == true) {
                               this.isPreguntaLike = false;
                               print("Voto quitado");
+                              Pregunta.removeVotePregunta(widget.pregunta);
+                              this.cantVotos--;
                             } else {
                               this.isPreguntaLike = true;
                               print("Voto puesto");
+                              Pregunta.votarPregunta(widget.pregunta);
+                              this.cantVotos++;
                             }
                           });
                         }),
