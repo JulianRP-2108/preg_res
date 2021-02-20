@@ -25,13 +25,13 @@ class Usuario {
   @protected
   int respuestas;
   @protected
-  List<DocumentReference> preguntasVotadas;
+  List<dynamic> preguntasVotadas;
   @protected
-  List<DocumentReference> respuestasVotadas;
+  List<dynamic> respuestasVotadas;
   @protected
-  List<DocumentReference> preguntasReportadas;
+  List<dynamic> preguntasReportadas;
   @protected
-  List<DocumentReference> respuestasReportadas;
+  List<dynamic> respuestasReportadas;
 
   static final Usuario _user = Usuario._internal();
 
@@ -51,13 +51,13 @@ class Usuario {
   static void setPosMensual(int posMensual) => _user.posMensual = posMensual;
   static void setRespuestas(int respuestas) => _user.respuestas = respuestas;
   static void setPreguntas(int preguntas) => _user.preguntas = preguntas;
-  static void setPreguntasVotadas(List<DocumentReference> votadas) =>
+  static void setPreguntasVotadas(List<dynamic> votadas) =>
       _user.preguntasVotadas = votadas;
-  static void setPreguntasReportadas(List<DocumentReference> reportadas) =>
+  static void setPreguntasReportadas(List<dynamic> reportadas) =>
       _user.preguntasReportadas = reportadas;
-  static void setRespuestasVotadas(List<DocumentReference> votadas) =>
+  static void setRespuestasVotadas(List<dynamic> votadas) =>
       _user.respuestasVotadas = votadas;
-  static void setRespuestasReportadas(List<DocumentReference> reportadas) =>
+  static void setRespuestasReportadas(List<dynamic> reportadas) =>
       _user.respuestasReportadas = reportadas;
 
   static String getNombre() => _user.nombre;
@@ -70,14 +70,10 @@ class Usuario {
   static int getPosMensual() => _user.posMensual;
   static int getRespuestas() => _user.respuestas;
   static int getPreguntas() => _user.preguntas;
-  static List<DocumentReference> getPreguntasVotadas() =>
-      _user.preguntasVotadas;
-  static List<DocumentReference> getPreguntasReportadas() =>
-      _user.preguntasReportadas;
-  static List<DocumentReference> getRespuestasVotadas() =>
-      _user.respuestasVotadas;
-  static List<DocumentReference> getRespuestasReportadas() =>
-      _user.respuestasReportadas;
+  static List<dynamic> getPreguntasVotadas() => _user.preguntasVotadas;
+  static List<dynamic> getPreguntasReportadas() => _user.preguntasReportadas;
+  static List<dynamic> getRespuestasVotadas() => _user.respuestasVotadas;
+  static List<dynamic> getRespuestasReportadas() => _user.respuestasReportadas;
 
   //  ACA cargo los datos al singleton
   static void fromDocument(DocumentSnapshot doc) {
@@ -93,6 +89,7 @@ class Usuario {
       Usuario.setPuntaje(doc.get('puntaje'));
       Usuario.setPreguntas(doc.get('preguntas'));
       Usuario.setRespuestas(doc.get('respuestas'));
+      print(doc.get('preguntasVotadas'));
       Usuario.setPreguntasVotadas(doc.get('preguntasVotadas'));
       Usuario.setPreguntasReportadas(doc.get('preguntasReportadas'));
       Usuario.setRespuestasVotadas(doc.get('respuestasVotadas'));

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:preg_respuestas/modelos/Pregunta.dart';
 import 'package:preg_respuestas/modelos/Respuesta.dart';
+import 'package:preg_respuestas/modelos/Usuario.dart';
 import 'package:preg_respuestas/widgets/alertaConfirmacion.dart';
 
 /* 
@@ -45,6 +46,18 @@ class _PreguntaPageState extends State<PreguntaPage> {
   void initState() {
     super.initState();
     this.cantVotos = widget.pregunta.cantVotos;
+    print("El email del logueado es: ");
+    print(Usuario.getEmail());
+    print(Usuario.getPreguntasVotadas());
+    for (dynamic ref in Usuario.getPreguntasVotadas()) {
+      try {
+        if (ref.id == widget.pregunta.id) {
+          this.isPreguntaLike = true;
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
     getRespuestas();
 
     //Obtengo los datos del usuario
