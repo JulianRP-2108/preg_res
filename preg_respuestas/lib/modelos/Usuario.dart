@@ -89,7 +89,6 @@ class Usuario {
       Usuario.setPuntaje(doc.get('puntaje'));
       Usuario.setPreguntas(doc.get('preguntas'));
       Usuario.setRespuestas(doc.get('respuestas'));
-      print(doc.get('preguntasVotadas'));
       Usuario.setPreguntasVotadas(doc.get('preguntasVotadas'));
       Usuario.setPreguntasReportadas(doc.get('preguntasReportadas'));
       Usuario.setRespuestasVotadas(doc.get('respuestasVotadas'));

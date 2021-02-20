@@ -46,9 +46,8 @@ class _PreguntaPageState extends State<PreguntaPage> {
   void initState() {
     super.initState();
     this.cantVotos = widget.pregunta.cantVotos;
-    print("El email del logueado es: ");
-    print(Usuario.getEmail());
-    print(Usuario.getPreguntasVotadas());
+    print("La cantidad de votos de la pregunta es: ");
+    print(widget.pregunta.cantVotos);
     for (dynamic ref in Usuario.getPreguntasVotadas()) {
       try {
         if (ref.id == widget.pregunta.id) {
@@ -308,7 +307,7 @@ class _PreguntaPageState extends State<PreguntaPage> {
                 child: Row(
                   children: [
                     Text(
-                      "(" + this.cantVotos.toString() + ")",
+                      "(" + widget.pregunta.cantVotos.toString() + ")",
                     ),
                     this.path == FirebaseAuth.instance.currentUser.uid
                         ? IconButton(
@@ -346,12 +345,14 @@ class _PreguntaPageState extends State<PreguntaPage> {
                               this.isPreguntaLike = false;
                               print("Voto quitado");
                               Pregunta.removeVotePregunta(widget.pregunta);
-                              this.cantVotos--;
+                              //this.cantVotos--;
+                              widget.pregunta.cantVotos--;
                             } else {
                               this.isPreguntaLike = true;
                               print("Voto puesto");
                               Pregunta.votarPregunta(widget.pregunta);
-                              this.cantVotos++;
+                              //this.cantVotos++;
+                              widget.pregunta.cantVotos++;
                             }
                           });
                         }),

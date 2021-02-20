@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:preg_respuestas/modelos/Usuario.dart';
 
 class Pregunta {
   Pregunta(
@@ -111,6 +112,9 @@ class Pregunta {
           .update({
         'preguntasVotadas': FieldValue.arrayUnion([referenciaPregunta])
       });
+      var votadas = Usuario.getPreguntasVotadas();
+      votadas.add(referenciaPregunta);
+      Usuario.setPreguntasVotadas(votadas);
     } catch (e) {
       print("Error al likear pregunta");
       print(e);
@@ -137,6 +141,9 @@ class Pregunta {
           .update({
         'preguntasVotadas': FieldValue.arrayRemove([referenciaPregunta])
       });
+      var votadas = Usuario.getPreguntasVotadas();
+      votadas.remove(referenciaPregunta);
+      Usuario.setPreguntasVotadas(votadas);
     } catch (e) {
       print("Error al quitar voto pregunta");
       print(e);
