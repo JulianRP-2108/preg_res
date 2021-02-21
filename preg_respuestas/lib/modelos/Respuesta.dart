@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:preg_respuestas/modelos/Usuario.dart';
 
 class Respuesta {
   Respuesta(
@@ -86,6 +87,63 @@ class Respuesta {
       print("Ocurrio un error al eliminar respuesta");
       return false;
     }
+    return true;
+  }
+
+  //Necesito el usuario logueado
+  //Necesito el id de la respuesta para likearla
+  static Future<bool> votarRespuesta(Respuesta respuesta) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('respuestas')
+          .doc(respuesta.id)
+          .update({'votos': respuesta.votos + 1});
+      //.set({'cantVotos': pregunta.cantVotos + 1});
+      DocumentReference referenciaRespuesta =
+          FirebaseFirestore.instance.doc('/respuestas/' + respuesta.id);
+      await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(FirebaseAuth.instance.currentUser.uid)
+          .update({
+        'respuestasVotadas': FieldValue.arrayUnion([referenciaRespuesta])
+      });
+      var votadas = Usuario.getRespuestasVotadas();
+      votadas.add(referenciaRespuesta);
+      Usuario.setRespuestasVotadas(votadas);
+    } catch (e) {
+      print("Error al votar la respuesta");
+      print(e);
+      return false;
+    }
+    print("Respuesta votada correctamente");
+    return true;
+  }
+
+  static Future<bool> removeVoteRespuesta(Respuesta respuesta) async {
+    try {
+      if (respuesta.votos > 0) {
+        await FirebaseFirestore.instance
+            .collection('respuestas')
+            .doc(respuesta.id)
+            .update({'votos': respuesta.votos - 1});
+      }
+      DocumentReference referenciaRespuesta =
+          FirebaseFirestore.instance.doc('/respuestas/' + respuesta.id);
+      await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(FirebaseAuth.instance.currentUser.uid)
+          .update({
+        'respuestasVotadas': FieldValue.arrayRemove([referenciaRespuesta])
+      });
+      var votadas = Usuario.getRespuestasVotadas();
+      votadas.remove(referenciaRespuesta);
+      Usuario.setRespuestasVotadas(votadas);
+    } catch (e) {
+      print("Error el remover voto respuesta");
+      print(e);
+      return false;
+    }
+    print("Voto respuesta removido");
     return true;
   }
 }

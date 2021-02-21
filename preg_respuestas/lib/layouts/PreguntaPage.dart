@@ -389,6 +389,9 @@ class _PreguntaPageState extends State<PreguntaPage> {
         .split('/')[1]
         .split(')')[0];
     bool userAutor = false;
+    DocumentReference refRespuesta = FirebaseFirestore.instance
+        .doc('/respuestas/' + _respuestasData[index].id);
+    bool userLiked = Usuario.getRespuestasVotadas().contains(refRespuesta);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
@@ -440,11 +443,20 @@ class _PreguntaPageState extends State<PreguntaPage> {
                             "(${this._respuestasData[index].votos})",
                           ),
                     IconButton(
-                        icon:
-                            Icon(Icons.volunteer_activism, color: Colors.black),
-                        onPressed: () {
-                          //Puedo guardar un array con las posiciones que se votaron
-                          print("Respuesta votada");
+                        icon: Icon(Icons.volunteer_activism,
+                            color: userLiked ? Colors.lightBlue : Colors.black),
+                        onPressed: () async {
+                          if (userLiked) {
+                            //Eliminar voto
+                            userLiked = false;
+                            await Respuesta.removeVoteRespuesta(
+                                _respuestasData[index]);
+                          } else {
+                            userLiked = true;
+                            await Respuesta.votarRespuesta(
+                                _respuestasData[index]);
+                          }
+                          setState(() {});
                         }),
                     IconButton(
                         icon: Icon(Icons.report_gmailerrorred_rounded),
